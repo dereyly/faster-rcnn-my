@@ -4,3 +4,9 @@ lib/build
 lib/pycocotools/_mask.c
 lib/pycocotools/_mask.so
 *.caffemodel
+.idea
+data
+data/*
+res
+output
+caffe-fast-rcnn

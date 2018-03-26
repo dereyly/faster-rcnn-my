@@ -8,7 +8,10 @@
 # --------------------------------------------------------
 
 """Train a Fast R-CNN network on a region of interest database."""
-
+#--gpu 0    --solver models/pvanet/example_train/solver.prototxt --weights models/pvanet/pretrained/pva9.1_pretrained_no_fc6.caffemodel  --iters 180000  --cfg models/pvanet/cfgs/train.yml --imdb voc_2007_trainval
+#/home/dereyly/progs/pva-faster-rcnn/models/priv/resnet101-v2-merge.caffemodel
+#--gpu 0    --solver models/pvanet/example_train/solver_2.prototxt --weights/home/dereyly/progs/pva-faster-rcnn/models/priv/resnet101-v2-merge.caffemodel  --iters 120000  --cfg models/pvanet/cfgs/train.yml --imdb voc_2007_trainval
+#--gpu 1    --solver models/pvanet/example_train/solver.prototxt --weights models/pvanet/pretrained/pva9.1_pretrained_no_fc6.caffemodel  --iters 180000  --cfg models/pvanet/cfgs/train.yml --imdb voc_2007_trainval
 import _init_paths
 from fast_rcnn.train import get_training_roidb, train_net
 from fast_rcnn.config import cfg, cfg_from_file, cfg_from_list, get_output_dir
@@ -19,7 +22,8 @@ import argparse
 import pprint
 import numpy as np
 import sys
-
+import os
+os.chdir('..')
 def parse_args():
     """
     Parse input arguments

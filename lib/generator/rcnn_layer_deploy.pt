@@ -1,0 +1,13 @@
+layer {
+  name: 'rcnn-ancors'
+  type: 'Python'
+  bottom: 'rois'
+  %s
+  top: 'cls_prob'
+  top: 'bbox_pred'
+  python_param {
+    module: 'rpn.rcnn_deploy_layer_multi'
+    layer: 'RCNNDeployLayer'
+    param_str: "{'ratios': [0.5, 1, 2], 'scales': [2, 4, 8, 16, 32]}"
+  }
+}

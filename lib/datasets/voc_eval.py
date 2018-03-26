@@ -8,6 +8,16 @@ import xml.etree.ElementTree as ET
 import os
 import cPickle
 import numpy as np
+# def get_cls2ctg():
+#     fname='/home/dereyly/ImageDB/food/VOC5180/sku_space_package_type_list.txt'
+#     cls2ctg={}
+#     with open(fname,'r') as f:
+#         for line in f.readlines():
+#             line=line.strip()
+#             sl = line.split(' ')
+#             cls2ctg[sl[0]]=sl[1]
+#     return cls2ctg
+# cls2ctg = get_cls2ctg()
 
 def parse_rec(filename):
     """ Parse a PASCAL VOC xml file """
@@ -15,15 +25,16 @@ def parse_rec(filename):
     objects = []
     for obj in tree.findall('object'):
         obj_struct = {}
+        #obj_struct['name'] = cls2ctg[obj.find('name').text]
         obj_struct['name'] = obj.find('name').text
         obj_struct['pose'] = obj.find('pose').text
         obj_struct['truncated'] = int(obj.find('truncated').text)
         obj_struct['difficult'] = int(obj.find('difficult').text)
         bbox = obj.find('bndbox')
-        obj_struct['bbox'] = [int(bbox.find('xmin').text),
-                              int(bbox.find('ymin').text),
-                              int(bbox.find('xmax').text),
-                              int(bbox.find('ymax').text)]
+        obj_struct['bbox'] = [int(float(bbox.find('xmin').text)),
+                              int(float(bbox.find('ymin').text)),
+                              int(float(bbox.find('xmax').text)),
+                              int(float(bbox.find('ymax').text))]
         objects.append(obj_struct)
 
     return objects
@@ -145,6 +156,8 @@ def voc_eval(detpath,
     # sort by confidence
     sorted_ind = np.argsort(-confidence)
     sorted_scores = np.sort(-confidence)
+    if len(sorted_ind)==0:
+        return 0, 0, 0
     BB = BB[sorted_ind, :]
     image_ids = [image_ids[x] for x in sorted_ind]
 

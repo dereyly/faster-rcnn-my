@@ -106,7 +106,7 @@ __C.TRAIN.RPN_POSITIVE_OVERLAP = 0.7
 # IOU < thresh: negative example
 __C.TRAIN.RPN_NEGATIVE_OVERLAP = 0.3
 # If an anchor statisfied by positive and negative conditions set to negative
-__C.TRAIN.RPN_CLOBBER_POSITIVES = False
+__C.TRAIN.RPN_CLOBBER_POSITIVES = False #Need set to True to protect RPN
 # Max number of foreground examples
 __C.TRAIN.RPN_FG_FRACTION = 0.5
 # Total number of examples

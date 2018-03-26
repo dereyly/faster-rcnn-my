@@ -1,0 +1,19 @@
+train_net: "models/pvanet/example_train_384/train_food.prototxt"
+base_lr: 0.0001 #default 0.001
+lr_policy: "fixed"
+gamma: 0.1 #0.1
+stepvalue: 50000
+#stepvalue: 10000
+#stepsize: 70000 #default 50000
+display: 20
+average_loss: 100
+momentum: 0.9
+weight_decay: 0.0002
+
+
+# We disable standard caffe solver snapshotting and implement our own snapshot
+# function
+snapshot: 0
+# We still use the snapshot prefix, though
+snapshot_prefix: "pvanet_frcnn_384_dairy_20170818_from_20170818_v5_3_134_after_45k"
+iter_size: 2

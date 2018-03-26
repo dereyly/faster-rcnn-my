@@ -146,6 +146,19 @@ class ProposalLayer(caffe.Layer):
         # 6. apply nms (e.g. threshold = 0.7)
         # 7. take after_nms_topN (e.g. 300)
         # 8. return the top proposals (-> RoIs top)
+        if 0:
+            keep1 = nms(np.hstack((proposals, scores)), nms_thresh)
+            if post_nms_topN > 0:
+                keep1 = keep1[:int(0.8*post_nms_topN)]
+
+            keep2 = nms(np.hstack((proposals, scores)), 0.05)
+            if post_nms_topN > 0:
+                keep2 = keep2[:int(0.8*post_nms_topN)]
+
+            keep_all=keep1+keep2
+            proposals = proposals[keep_all, :]
+            scores = scores[keep_all]
+
         keep = nms(np.hstack((proposals, scores)), nms_thresh)
         if post_nms_topN > 0:
             keep = keep[:post_nms_topN]

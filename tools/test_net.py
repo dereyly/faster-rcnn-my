@@ -8,6 +8,15 @@
 # --------------------------------------------------------
 
 """Test a Fast R-CNN network on an image database."""
+#/home/dereyly/progs/pva-faster-rcnn/output/faster_rcnn_pvanet/voc_2007_trainval/pvanet_iter_180000.caffemodel
+#--gpu 0 --def models/pvanet/example_train/test.prototxt --net output/faster_rcnn_pvanet/voc_2007_trainval/pvanet_iter_180000.caffemodel --cfg models/pvanet/cfgs/submit_1019.yml
+#--gpu 0 --def models/pvanet/example_train/test_2.prototxt --net output/faster_rcnn_pvanet/voc_2007_trainval/pvanet_v2_iter_160000.caffemodel --cfg models/pvanet/cfgs/submit_1019.yml
+#/home/dereyly/progs/caffe-model/det/faster_rcnn/models/pascal_voc/resnet101-v2/deploy_faster_voc_resnet101-v2-merge.prototxt /home/dereyly/progs/pva-faster-rcnn/models/priv/faster_voc_resnet101-v2_ss_iter_100000.caffemodel
+#--gpu 0 --def /home/dereyly/progs/caffe-model/det/faster_rcnn/models/pascal_voc/resnet101-v2/deploy_faster_voc_resnet101-v2-merge.prototxt --net /home/dereyly/progs/pva-faster-rcnn/models/priv/faster_voc_resnet101-v2_ss_iter_100000.caffemodel --cfg models/pvanet/cfgs/submit_1019.yml
+#--gpu 0 --def /home/dereyly/progs/caffe-model/det/faster_rcnn/models/pascal_voc/resnet101-v2/deploy_faster_voc_resnet101-my.prototxt --net /home/dereyly/progs/pva-faster-rcnn/output/faster_rcnn_pvanet/voc_2007_trainval/res101-my_iter_80000.caffemodel  --cfg models/pvanet/cfgs/submit_1019.yml
+#--gpu 0 --def models/pvanet/example_train/test_2.prototxt --net output/faster_rcnn_pvanet/voc_2007_trainval/pvanet_v2_iter_160000.caffemodel --cfg models/pvanet/cfgs/submit_1019.yml
+#--gpu 0 --def models/pvanet/example_train/test_multi-rcnn.prototxt --net output/faster_rcnn_pvanet/voc_2007_trainval/pvanet_4_iter_180000.caffemodel --cfg models/pvanet/cfgs/submit_1019.yml
+#--gpu 0 --def /home/dereyly/progs/pva-faster-rcnn/lib/generator/res101_multi_thread.prototxt --net /home/dereyly/progs/pva-faster-rcnn/models/multi_rcnn/faster_voc_resnet101-multi-anchrs_ss_iter_180000.caffemodel --cfg models/pvanet/cfgs/submit_1019.yml
 
 import _init_paths
 from fast_rcnn.test import test_net
@@ -17,7 +26,8 @@ import caffe
 import argparse
 import pprint
 import time, os, sys
-
+import os
+os.chdir('/home/dereyly/progs/pva-faster-rcnn/')
 def parse_args():
     """
     Parse input arguments
@@ -73,9 +83,9 @@ if __name__ == '__main__':
     print('Using config:')
     pprint.pprint(cfg)
 
-    while not os.path.exists(args.caffemodel) and args.wait:
-        print('Waiting for {} to exist...'.format(args.caffemodel))
-        time.sleep(10)
+    # while not os.path.exists(args.caffemodel) and args.wait:
+    #     print('Waiting for {} to exist...'.format(args.caffemodel))
+    #     time.sleep(10)
 
     caffe.set_mode_gpu()
     caffe.set_device(args.gpu_id)

@@ -6,7 +6,8 @@
 # --------------------------------------------------------
 
 """Test a Fast R-CNN network on an imdb (image database)."""
-
+import sys
+sys.path.insert(0,'/home/dereyly/progs/caffe-nccl/python')
 from fast_rcnn.config import cfg, get_output_dir
 from fast_rcnn.bbox_transform import clip_boxes, bbox_transform_inv
 import argparse
@@ -14,11 +15,14 @@ from utils.timer import Timer
 import numpy as np
 import cv2
 import caffe
-from fast_rcnn.nms_wrapper import nms
+
 import cPickle
 from utils.blob import im_list_to_blob
 import os
 from utils.cython_bbox import bbox_overlaps
+# from fast_rcnn.nms_wrapper import nms
+#sys.path.insert(0,'/home/dereyly/progs/py-RFCN-priv/lib/fast_rcnn')
+from nms_wrapper import nms, soft_nms
 
 
 def _get_image_blob(im):
@@ -191,6 +195,7 @@ def im_detect(net, im, _t=None, boxes=None):
     if cfg.TEST.BBOX_REG:
         # Apply bounding-box regression deltas
         box_deltas = blobs_out['bbox_pred']
+        box_deltas/=10
         pred_boxes = bbox_transform_inv(boxes, box_deltas)
         pred_boxes = clip_boxes(pred_boxes, im.shape)
     else:
@@ -322,10 +327,12 @@ def test_net(net, imdb, max_per_image=100, thresh=0.01, vis=False):
             inds = np.where(scores[:, j] > thresh)[0]
             cls_scores = scores[inds, j]
             cls_boxes = boxes[inds, j*4:(j+1)*4]
+            #cls_boxes = boxes[inds, 4:8] # 0.6971 vs 0.74
             cls_dets = np.hstack((cls_boxes, cls_scores[:, np.newaxis])) \
                 .astype(np.float32, copy=False)
             keep = nms(cls_dets, cfg.TEST.NMS)
-
+            #SOFT_NMS=1
+            #keep = soft_nms(cls_dets, method=SOFT_NMS)
             dets_NMSed = cls_dets[keep, :]
             if cfg.TEST.BBOX_VOTE:
                 cls_dets = bbox_vote(dets_NMSed, cls_dets)

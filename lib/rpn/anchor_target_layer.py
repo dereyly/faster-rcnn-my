@@ -14,7 +14,7 @@ import numpy.random as npr
 from generate_anchors import generate_anchors
 from utils.cython_bbox import bbox_overlaps
 from fast_rcnn.bbox_transform import bbox_transform
-
+import cv2
 DEBUG = False
 
 class AnchorTargetLayer(caffe.Layer):
@@ -24,6 +24,9 @@ class AnchorTargetLayer(caffe.Layer):
     """
 
     def setup(self, bottom, top):
+        self.count=0
+        self.roi_debug = True
+        self.is_soft_th_rpn=False
         layer_params = yaml.load(self.param_str)
         anchor_scales = layer_params.get('scales', (8, 16, 32))
         anchor_ratios = layer_params.get('ratios', ((0.5, 1, 2)))
@@ -62,8 +65,17 @@ class AnchorTargetLayer(caffe.Layer):
         top[2].reshape(1, A * 4, height, width)
         # bbox_outside_weights
         top[3].reshape(1, A * 4, height, width)
+        if self.roi_debug:
+            self.roi_count =0
+            self.roi_stats=np.zeros(A,float)
+            #self.roi_overlaps=[]
+            self.roi_ov_under_05 = np.zeros(A,float)
+            self.roi_ov_under_03 = np.zeros(A,float)
+        if self.is_soft_th_rpn:
+            self.soft_th = cfg.TRAIN.RPN_POSITIVE_OVERLAP*np.ones(A, float)
 
     def forward(self, bottom, top):
+        self.count+=1
         # Algorithm:
         #
         # for each (H, W) location i
@@ -81,6 +93,13 @@ class AnchorTargetLayer(caffe.Layer):
         gt_boxes = bottom[1].data
         # im_info
         im_info = bottom[2].data[0, :]
+        if self.roi_debug:
+            im=bottom[3].data
+            im=(np.transpose(im[0],(1,2,0))+128).copy()
+            # for bb in gt_boxes:
+            #     bb=bb.astype(int)
+            #     cv2.rectangle(im,(bb[0],bb[1]),(bb[2],bb[3]),(0,255,0),3)
+            # cv2.imwrite('/home/dereyly/progs/pva-faster-rcnn/1.jpg',im)
 
         if DEBUG:
             print ''
@@ -107,13 +126,19 @@ class AnchorTargetLayer(caffe.Layer):
         all_anchors = all_anchors.reshape((K * A, 4))
         total_anchors = int(K * A)
 
+
         # only keep anchors inside the image
+        if self.roi_debug:
+            self._allowed_border=0.15*im_info[:2].max()
         inds_inside = np.where(
             (all_anchors[:, 0] >= -self._allowed_border) &
             (all_anchors[:, 1] >= -self._allowed_border) &
             (all_anchors[:, 2] < im_info[1] + self._allowed_border) &  # width
             (all_anchors[:, 3] < im_info[0] + self._allowed_border)    # height
         )[0]
+        if self.is_soft_th_rpn:
+            anchors_id=np.tile(range(A), K)
+            anchors_id=anchors_id[inds_inside]
 
         if DEBUG:
             print 'total_anchors', total_anchors
@@ -127,7 +152,8 @@ class AnchorTargetLayer(caffe.Layer):
         # label: 1 is positive, 0 is negative, -1 is dont care
         labels = np.empty((len(inds_inside), ), dtype=np.float32)
         labels.fill(-1)
-
+        if self.roi_debug:
+            overlaps_stats=10*np.ones((len(inds_inside), ), dtype=np.float32)
         # overlaps between the anchors and the gt boxes
         # overlaps (ex, gt)
         overlaps = bbox_overlaps(
@@ -145,10 +171,25 @@ class AnchorTargetLayer(caffe.Layer):
             labels[max_overlaps < cfg.TRAIN.RPN_NEGATIVE_OVERLAP] = 0
 
         # fg label: for each gt, anchor with highest overlap
-        labels[gt_argmax_overlaps] = 1
+        #print(labels.shape)
+        #if not self.is_soft_th_rpn:
+        if self.is_soft_th_rpn:
+            gt_argmax_overlaps=np.array([],int)
+            for id in range(A):
+                #labels[np.bitwise_and(anchors_id==id,max_overlaps >= self.soft_th[id])] = 1
+                loc_id=np.where(np.bitwise_and(anchors_id==id,max_overlaps >= self.soft_th[id]))[0]
+                gt_argmax_overlaps=np.hstack((loc_id,gt_argmax_overlaps))
+            #gt_argmax_overlaps=gt_argmax_overlaps.astype(int)
+        else:
+            labels[max_overlaps >= cfg.TRAIN.RPN_POSITIVE_OVERLAP] = 1
 
+        labels[gt_argmax_overlaps] = 1
+        if self.roi_debug:
+            overlaps_stats[gt_argmax_overlaps]=max_overlaps[gt_argmax_overlaps]
+            bboxes=anchors[gt_argmax_overlaps]
         # fg label: above threshold IOU
-        labels[max_overlaps >= cfg.TRAIN.RPN_POSITIVE_OVERLAP] = 1
+
+
 
         if cfg.TRAIN.RPN_CLOBBER_POSITIVES:
             # assign bg labels last so that negative labels can clobber positives
@@ -161,6 +202,8 @@ class AnchorTargetLayer(caffe.Layer):
             disable_inds = npr.choice(
                 fg_inds, size=(len(fg_inds) - num_fg), replace=False)
             labels[disable_inds] = -1
+            if self.roi_debug:
+                overlaps_stats[disable_inds]=10
 
         # subsample negative labels if we have too many
         num_bg = cfg.TRAIN.RPN_BATCHSIZE - np.sum(labels == 1)
@@ -206,6 +249,7 @@ class AnchorTargetLayer(caffe.Layer):
             print stds
 
         # map up to original set of anchors
+
         labels = _unmap(labels, total_anchors, inds_inside, fill=-1)
         bbox_targets = _unmap(bbox_targets, total_anchors, inds_inside, fill=0)
         bbox_inside_weights = _unmap(bbox_inside_weights, total_anchors, inds_inside, fill=0)
@@ -222,7 +266,48 @@ class AnchorTargetLayer(caffe.Layer):
             print 'rpn: num_negative avg', self._bg_sum / self._count
 
         # labels
+
         labels = labels.reshape((1, height, width, A)).transpose(0, 3, 1, 2)
+        if self.roi_debug:
+            stats_loc=(labels == 1).sum(axis=2).sum(axis=2)
+            self.roi_stats+=np.squeeze(stats_loc,axis=0)
+
+            overlaps_stats = _unmap(overlaps_stats, total_anchors, inds_inside, fill=10)
+            overlaps_stats =overlaps_stats.reshape((1, height, width, A)).transpose(0, 3, 1, 2)
+            self.roi_ov_under_05 += np.squeeze((overlaps_stats<0.5).sum(axis=2).sum(axis=2),axis=0)
+            self.roi_ov_under_03 += np.squeeze((overlaps_stats < 0.3).sum(axis=2).sum(axis=2), axis=0)
+            if (self.roi_ov_under_05>0).sum()>0 and 0:
+                #bboxes=
+                # for bb in bboxes:
+                #     bb = bb.astype(int)
+                #     cv2.rectangle(im, (bb[0], bb[1]), (bb[2], bb[3]), (255, 0, 0), 1)
+                for bb in gt_boxes:
+                    bb = bb.astype(int)
+                    cv2.rectangle(im, (bb[0], bb[1]), (bb[2], bb[3]), (0, 255, 0), 3)
+                k=0
+                for bb in bboxes:
+                    k+=1
+                    img=im.copy()
+                    bb = bb.astype(int)
+                    cv2.rectangle(img, (bb[0], bb[1]), (bb[2], bb[3]), (255, 0, 0), 1)
+                    cv2.imwrite('/home/dereyly/progs/pva-faster-rcnn/res/%d.jpg'%k, img)
+                    if k>100:
+                        break
+                zz=0
+            if self.count % 200==0:
+                norm_stat=self.roi_stats/self.roi_stats.sum()
+                np.set_printoptions(suppress=True)
+                print(self.roi_stats)
+                print(self.roi_ov_under_05)
+                print(self.roi_ov_under_03)
+                if self.is_soft_th_rpn:
+                    self.soft_th[norm_stat > 1.0/A] = 0.65
+                    self.soft_th[norm_stat > 4.0/A] = 0.7
+                    self.soft_th[norm_stat < 1.0/A] = 0.6
+                    self.soft_th[norm_stat < 0.5/A] = 0.5
+                    self.soft_th[norm_stat < 0.25/A] = 0.4
+                    print(self.soft_th)
+                zz=0
         labels = labels.reshape((1, 1, A * height, width))
         top[0].reshape(*labels.shape)
         top[0].data[...] = labels

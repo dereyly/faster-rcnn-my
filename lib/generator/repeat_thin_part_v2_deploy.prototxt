@@ -1,0 +1,111 @@
+layer {
+  name: "fc6_XXX"
+  type: "InnerProduct"
+  bottom: "roi_pool"
+  top: "fc6_XXX"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  inner_product_param {
+    num_output: 128
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  name: "fc6_XXX/relu"
+  type: "ReLU"
+  bottom: "fc6_XXX"
+  top: "fc6_XXX"
+}
+
+
+layer {
+  name: "fc7_XXX"
+  type: "InnerProduct"
+  bottom: "fc6_XXX"
+  top: "fc7_XXX"
+  param {
+    lr_mult: 1.0
+    decay_mult: 1.0
+  }
+  param {
+    lr_mult: 2.0
+    decay_mult: 0.0
+  }
+  inner_product_param {
+    num_output: 128
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.1
+    }
+  }
+}
+
+layer {
+  name: "fc7_XXX/relu"
+  type: "ReLU"
+  bottom: "fc7_XXX"
+  top: "fc7_XXX"
+}
+
+layer {
+  name: "cls_score_XXX"
+  type: "InnerProduct"
+  bottom: "fc7_XXX"
+  top: "cls_score_XXX"
+  param { lr_mult: 1.0 }
+  param { lr_mult: 2.0 }
+  inner_product_param {
+    num_output: 21
+    weight_filler { type: "gaussian" std: 0.01 }
+    bias_filler { type: "constant" value: 0 }
+  }
+}
+
+layer {
+  name: "bbox_pred" #keep same weights
+  type: "InnerProduct"
+  bottom: "fc7_XXX"
+  top: "bbox_pred_XXX"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  inner_product_param {
+    num_output: 84
+    weight_filler {
+      type: "msra"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+
+layer {
+   name: "prob_XXX"
+   type: "Softmax"
+   bottom: "cls_score_XXX"
+   top: "prob_XXX"
+}
