@@ -27,7 +27,8 @@ import argparse
 import pprint
 import time, os, sys
 import os
-os.chdir('/home/dereyly/progs/pva-faster-rcnn/')
+root_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..")
+os.chdir(root_path)
 def parse_args():
     """
     Parse input arguments
