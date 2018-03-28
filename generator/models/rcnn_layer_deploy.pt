@@ -4,7 +4,7 @@ layer {
   bottom: 'rois'
   %s
   top: 'cls_prob'
-  top: 'bbox_pred'
+  #top: 'bbox_pred'
   python_param {
     module: 'rpn.rcnn_deploy_layer_multi'
     layer: 'RCNNDeployLayer'

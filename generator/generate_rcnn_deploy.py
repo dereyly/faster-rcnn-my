@@ -8,10 +8,11 @@ num_threads=15
 # model_repeat='/home/dereyly/progs/py-RFCN-priv/caffe-model/det/faster_rcnn/models/pascal_voc/resnet101-v2/repeat_part.prototxt'
 # model_out='/home/dereyly/progs/py-RFCN-priv/caffe-model/det/faster_rcnn/models/pascal_voc/resnet101-v2/res101_multi_thread.prototxt'
 
-model_base='models/deploy_resnet101-base.prototxt'
-model_repeat='models/repeat_thin_part_v2_deploy.prototxt'
-model_out='models/res101_multi_thread.prototxt'
+model_base='models/deploy_resnet101-base-v3.prototxt'
+model_repeat='models/repeat_thin_part_v3_deploy.prototxt'
 rcnn_layer='models/rcnn_layer_deploy.pt'
+
+model_out='models/deploy_res101_multi_thread.prototxt'
 
 
 txt_base=open(model_base,'r').read()
@@ -26,8 +27,8 @@ txt_out+='\n'
 str_rcnn=''
 for k in range(num_threads):
     str_rcnn+='bottom: "prob_%d"\n' % k
-for k in range(num_threads):
-    str_rcnn+='bottom: "bbox_pred_%d"\n' % k
+# for k in range(num_threads):
+#     str_rcnn+='bottom: "bbox_pred_%d"\n' % k
 txt_out+=txt_rcnn % str_rcnn +'\n'
 with open(model_out,'w') as fout:
     fout.write(txt_out)

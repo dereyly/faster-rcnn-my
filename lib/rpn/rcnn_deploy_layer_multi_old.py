@@ -47,6 +47,7 @@ class RCNNDeployLayer(caffe.Layer):
         self._num_anchors = self._anchors.shape[0]
         self.th_ov=1.5
         top[0].reshape(1)
+        top[1].reshape(1)
 
     def forward(self, bottom, top):
         # Proposal ROIs (0, x1, y1, x2, y2) coming from RPN
@@ -57,10 +58,10 @@ class RCNNDeployLayer(caffe.Layer):
             probs.append(bottom[1+i].data.copy())
         probs = np.array(probs)
 
-        # bbox_pred = []
-        # for i in range(self._num_anchors):
-        #     bbox_pred.append(bottom[1+self._num_anchors + i].data.copy())
-        # bbox_pred = np.array(bbox_pred)
+        bbox_pred = []
+        for i in range(self._num_anchors):
+            bbox_pred.append(bottom[1+self._num_anchors + i].data.copy())
+        bbox_pred = np.array(bbox_pred)
         batch_size=len(all_rois)
         # GT boxes (x1, y1, x2, y2, label)
         # TODO(rbg): it's annoying that sometimes I have extra info before
@@ -90,11 +91,10 @@ class RCNNDeployLayer(caffe.Layer):
             dbg_idx_ov.append(idx.tolist())
             #probs_out[k] = np.max(probs[idx,k,:],axis=0)
             probs_out[k] = np.max(probs[idx, k, :], axis=0)
-            # bbox_out[k] = 0 #np.mean(bbox_pred[idx, k, :], axis=0)
+            bbox_out[k] = 0 #np.mean(bbox_pred[idx, k, :], axis=0)
 
         dbg=np.abs(probs[0] - probs[11]).sum(axis=1)
         ix_dbg=dbg.argmax()
-        max_dbg=dbg.max()
         print (dbg>1).sum()
 
         #labels_out = np.expand_dims(labels_out,axis=1)
@@ -105,8 +105,8 @@ class RCNNDeployLayer(caffe.Layer):
 
         top[0].reshape(*probs_out.shape)
         top[0].data[...] = probs_out
-        # top[1].reshape(*bbox_out.shape)
-        # top[1].data[...] = bbox_out
+        top[1].reshape(*bbox_out.shape)
+        top[1].data[...] = bbox_out
         zz=0
 
     def backward(self, top, propagate_down, bottom):

@@ -8,13 +8,13 @@
 layer {
   name: 'rcnn-ancors'
   type: 'Python'
-  bottom: 'rois'
-  bottom: 'multi_rcnn_probs'
-  top: 'cls_prob'
+  bottom: 'rpn_rois'
+  bottom: 'labels'
+  top: 'labels_out'
   python_param {
-    module: 'rpn.rcnn_deploy_layer'
-    layer: 'RCNNDeployLayer'
-    param_str: "{'ratios': [0.5, 1, 2], 'scales': [2, 4, 8, 16, 32, 64]}"
+    module: 'rpn.rcnn_target_layer'
+    layer: 'RCNNTargetLayer'
+    param_str: "{'ratios': [0.5, 1, 2], 'scales': [2, 3, 5, 9, 16, 32]}"
   }
 }
 '''
@@ -28,7 +28,7 @@ from utils.cython_bbox import bbox_overlaps
 from generate_anchors import generate_anchors
 DEBUG = False
 
-class RCNNDeployLayer(caffe.Layer):
+class RCNNTargetLayer(caffe.Layer):
     """
     Assign object detection proposals to ground-truth targets. Produces proposal
     classification labels and bounding-box regression targets.
@@ -45,23 +45,30 @@ class RCNNDeployLayer(caffe.Layer):
         x_ctr = (_base_size-1.0) / 2
         self._anchors-=x_ctr
         self._num_anchors = self._anchors.shape[0]
-        self.th_ov=1.5
-        top[0].reshape(1)
+        self.th_ov=0.4
+        self.count =0
+        #top[0].reshape(1,1,1,self._num_anchors)
+        for i in range(self._num_anchors):
+            top[i].reshape(1)
+
 
     def forward(self, bottom, top):
+        self.count+=1
+        # if self.count >= 40000:
+        #     self.th_ov =0.2
+        # if self.count >= 80000:
+        #     self.th_ov =0.3
+        # if self.count >= 120000:
+        #     self.th_ov =0.4
+        # if self.count >= 140000:
+        #     self.th_ov =0.5
+        # if self.count % 1000 ==0:
+        #     print('self.th_ov', self.th_ov)
         # Proposal ROIs (0, x1, y1, x2, y2) coming from RPN
         # (i.e., rpn.proposal_layer.ProposalLayer), or any other source
         all_rois = bottom[0].data
-        probs=[]
-        for i in range(self._num_anchors):
-            probs.append(bottom[1+i].data.copy())
-        probs = np.array(probs)
-
-        # bbox_pred = []
-        # for i in range(self._num_anchors):
-        #     bbox_pred.append(bottom[1+self._num_anchors + i].data.copy())
-        # bbox_pred = np.array(bbox_pred)
-        batch_size=len(all_rois)
+        labels = bottom[1].data
+        batch_size=len(labels)
         # GT boxes (x1, y1, x2, y2, label)
         # TODO(rbg): it's annoying that sometimes I have extra info before
 
@@ -76,37 +83,30 @@ class RCNNDeployLayer(caffe.Layer):
             np.ascontiguousarray(self._anchors, dtype=np.float))
         gt_assignment = overlaps.argmax(axis=1)
         max_overlaps = overlaps.max(axis=1)
-
+        # argmax_overlaps = overlaps.argmax(axis=1)
+        # max_overlaps = overlaps[np.arange(len(centred_rois)), argmax_overlaps]
+        # gt_argmax_overlaps = overlaps.argmax(axis=0)
+        # gt_max_overlaps = overlaps[gt_argmax_overlaps,
+        #                            np.arange(overlaps.shape[1])]
         idx_ov_bool=overlaps>self.th_ov
         for k,id in enumerate(gt_assignment):
             idx_ov_bool[k,id]=True
 
         #idx_ov=np.where(overlaps>self.th_ov)
-        probs_out = -np.ones((batch_size,self.num_cls))
-        bbox_out = -np.ones((batch_size, self.num_cls*4))
+        labels_out = -np.ones((batch_size,self._num_anchors))
         dbg_idx_ov =[]
         for k in range(all_rois.shape[0]):
             idx=np.where(idx_ov_bool[k])[0]
             dbg_idx_ov.append(idx.tolist())
-            #probs_out[k] = np.max(probs[idx,k,:],axis=0)
-            probs_out[k] = np.max(probs[idx, k, :], axis=0)
-            # bbox_out[k] = 0 #np.mean(bbox_pred[idx, k, :], axis=0)
-
-        dbg=np.abs(probs[0] - probs[11]).sum(axis=1)
-        ix_dbg=dbg.argmax()
-        max_dbg=dbg.max()
-        print (dbg>1).sum()
-
+            labels_out[k,idx]=labels[k]
         #labels_out = np.expand_dims(labels_out,axis=1)
 
         zz=0
         #labels = labels[gt_assignment]
 
-
-        top[0].reshape(*probs_out.shape)
-        top[0].data[...] = probs_out
-        # top[1].reshape(*bbox_out.shape)
-        # top[1].data[...] = bbox_out
+        for i in range(self._num_anchors):
+            top[i].reshape(labels.shape[0])
+            top[i].data[...] = labels_out[:,i]
         zz=0
 
     def backward(self, top, propagate_down, bottom):
