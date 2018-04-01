@@ -4579,14 +4579,6 @@ layer {
 }
 
 layer {
-  name: "cls_score_0/sigm"
-  type: "Sigmoid"
-  bottom: "cls_score_0"
-  top: "cls_score_0"
-}
-
-
-layer {
   name: "fc6_1"
   type: "InnerProduct"
   bottom: "roi_pool"
@@ -4664,14 +4656,6 @@ layer {
     bias_filler { type: "constant" value: 0 }
   }
 }
-
-layer {
-  name: "cls_score_1/sigm"
-  type: "Sigmoid"
-  bottom: "cls_score_1"
-  top: "cls_score_1"
-}
-
 
 layer {
   name: "fc6_2"
@@ -4753,14 +4737,6 @@ layer {
 }
 
 layer {
-  name: "cls_score_2/sigm"
-  type: "Sigmoid"
-  bottom: "cls_score_2"
-  top: "cls_score_2"
-}
-
-
-layer {
   name: "fc6_3"
   type: "InnerProduct"
   bottom: "roi_pool"
@@ -4838,14 +4814,6 @@ layer {
     bias_filler { type: "constant" value: 0 }
   }
 }
-
-layer {
-  name: "cls_score_3/sigm"
-  type: "Sigmoid"
-  bottom: "cls_score_3"
-  top: "cls_score_3"
-}
-
 
 layer {
   name: "fc6_4"
@@ -4927,14 +4895,6 @@ layer {
 }
 
 layer {
-  name: "cls_score_4/sigm"
-  type: "Sigmoid"
-  bottom: "cls_score_4"
-  top: "cls_score_4"
-}
-
-
-layer {
   name: "fc6_5"
   type: "InnerProduct"
   bottom: "roi_pool"
@@ -5012,14 +4972,6 @@ layer {
     bias_filler { type: "constant" value: 0 }
   }
 }
-
-layer {
-  name: "cls_score_5/sigm"
-  type: "Sigmoid"
-  bottom: "cls_score_5"
-  top: "cls_score_5"
-}
-
 
 layer {
   name: "fc6_6"
@@ -5101,14 +5053,6 @@ layer {
 }
 
 layer {
-  name: "cls_score_6/sigm"
-  type: "Sigmoid"
-  bottom: "cls_score_6"
-  top: "cls_score_6"
-}
-
-
-layer {
   name: "fc6_7"
   type: "InnerProduct"
   bottom: "roi_pool"
@@ -5186,14 +5130,6 @@ layer {
     bias_filler { type: "constant" value: 0 }
   }
 }
-
-layer {
-  name: "cls_score_7/sigm"
-  type: "Sigmoid"
-  bottom: "cls_score_7"
-  top: "cls_score_7"
-}
-
 
 layer {
   name: "fc6_8"
@@ -5275,14 +5211,6 @@ layer {
 }
 
 layer {
-  name: "cls_score_8/sigm"
-  type: "Sigmoid"
-  bottom: "cls_score_8"
-  top: "cls_score_8"
-}
-
-
-layer {
   name: "fc6_9"
   type: "InnerProduct"
   bottom: "roi_pool"
@@ -5360,14 +5288,6 @@ layer {
     bias_filler { type: "constant" value: 0 }
   }
 }
-
-layer {
-  name: "cls_score_9/sigm"
-  type: "Sigmoid"
-  bottom: "cls_score_9"
-  top: "cls_score_9"
-}
-
 
 layer {
   name: "fc6_10"
@@ -5449,14 +5369,6 @@ layer {
 }
 
 layer {
-  name: "cls_score_10/sigm"
-  type: "Sigmoid"
-  bottom: "cls_score_10"
-  top: "cls_score_10"
-}
-
-
-layer {
   name: "fc6_11"
   type: "InnerProduct"
   bottom: "roi_pool"
@@ -5534,14 +5446,6 @@ layer {
     bias_filler { type: "constant" value: 0 }
   }
 }
-
-layer {
-  name: "cls_score_11/sigm"
-  type: "Sigmoid"
-  bottom: "cls_score_11"
-  top: "cls_score_11"
-}
-
 
 layer {
   name: "fc6_12"
@@ -5623,14 +5527,6 @@ layer {
 }
 
 layer {
-  name: "cls_score_12/sigm"
-  type: "Sigmoid"
-  bottom: "cls_score_12"
-  top: "cls_score_12"
-}
-
-
-layer {
   name: "fc6_13"
   type: "InnerProduct"
   bottom: "roi_pool"
@@ -5710,14 +5606,6 @@ layer {
 }
 
 layer {
-  name: "cls_score_13/sigm"
-  type: "Sigmoid"
-  bottom: "cls_score_13"
-  top: "cls_score_13"
-}
-
-
-layer {
   name: "fc6_14"
   type: "InnerProduct"
   bottom: "roi_pool"
@@ -5795,14 +5683,6 @@ layer {
     bias_filler { type: "constant" value: 0 }
   }
 }
-
-layer {
-  name: "cls_score_14/sigm"
-  type: "Sigmoid"
-  bottom: "cls_score_14"
-  top: "cls_score_14"
-}
-
 
 
 layer {
@@ -5887,4 +5767,14 @@ layer {
   propagate_down: 0
   top: "loss_cls"
   loss_weight: 1
+}
+layer {
+  name: "loss_cls_main_thr"
+  type: "SoftmaxWithLoss"
+  bottom: "cls_score"
+  bottom: "labels"
+  propagate_down: 1
+  propagate_down: 0
+  top: "loss_cls_main_thr"
+  loss_weight: 0.15
 }

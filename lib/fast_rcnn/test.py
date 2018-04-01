@@ -7,8 +7,8 @@
 
 """Test a Fast R-CNN network on an imdb (image database)."""
 import sys
-#sys.path.insert(0,'/home/dereyly/progs/caffe-nccl/python')
-sys.path.insert(0,'/home/dereyly/progs/group_caffe/caffe-fast-rcnn/python')
+sys.path.insert(0,'/home/dereyly/progs/caffe-nccl/python')
+#sys.path.insert(0,'/home/dereyly/progs/group_caffe/caffe-fast-rcnn/python')
 from fast_rcnn.config import cfg, get_output_dir
 from fast_rcnn.bbox_transform import clip_boxes, bbox_transform_inv
 import argparse
@@ -210,6 +210,7 @@ def im_detect(net, im, _t=None, boxes=None):
     if _t:
         _t['im_postproc'].toc()
 
+    #a=net.params['score_hidden'][0].data
     return scores, pred_boxes
 
 def vis_detections(im, class_name, dets, thresh=0.3):

@@ -41,7 +41,7 @@ class RCNNLayer(caffe.Layer):
         anchor_ratios = layer_params.get('ratios', ((0.5, 1, 2)))
         _base_size = layer_params.get('base_size', 16)
         self.num_cls=21
-
+        self.pow_coef=1
         self._anchors = generate_anchors(base_size=_base_size, ratios=anchor_ratios, scales=np.array(anchor_scales))
         x_ctr = (_base_size-1.0) / 2
         self._anchors-=x_ctr
@@ -100,7 +100,7 @@ class RCNNLayer(caffe.Layer):
 
 
         top[0].reshape(*scores_out.shape)
-        top[0].data[...] = scores_out
+        top[0].data[...] = scores_out*self.pow_coef
         # top[1].reshape(*bbox_out.shape)
         # top[1].data[...] = bbox_out
         zz=0
@@ -112,9 +112,12 @@ class RCNNLayer(caffe.Layer):
         for z in range(self._num_anchors+1): #+1 -- first main thread
             for i in range(self.batch_size):
                 # a=top[0].diff
-                # b=bottom[z+1].diff
+                #b=bottom[z+1].diff
+                #print(b)
                 if self.ov_mat[i,z]==1:
-                    bottom[z+1].diff[i] = top[0].diff[i,z].reshape(-1)
+                    bottom[z+1].diff[i] = top[0].diff[i,z].reshape(-1)/self.pow_coef
+                else:
+                    bottom[z + 1].diff[i]=np.zeros(self.num_cls)
                 # zz=0
 
 

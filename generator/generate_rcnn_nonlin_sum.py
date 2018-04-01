@@ -9,10 +9,10 @@ num_threads=15
 # model_out='/home/dereyly/progs/py-RFCN-priv/caffe-model/det/faster_rcnn/models/pascal_voc/resnet101-v2/res101_multi_thread.prototxt'
 
 model_base='models/resnet101-base-nonlin.prototxt'
-model_repeat='models/repeat_thin_part_nonlin.prototxt'
+model_repeat='models/repeat_thin_part_nonlin_v3.prototxt'
 rcnn_layer='models/rcnn_layer_nonlin.pt'
 
-model_out='models/res101_multi_thread.prototxt'
+model_out='models/res101_multi_thread_v3.prototxt'
 
 
 txt_base=open(model_base,'r').read()

@@ -11,6 +11,7 @@ input_shape {
   dim: 1
   dim: 3
 }
+
 ################ resnet101-v2 ################
 layer {
   name: "conv1"
@@ -4260,8 +4261,6 @@ layer {
     param_str: "{'feat_stride': 16, 'ratios': [0.5,1,2], 'scales': [2, 4, 8, 16, 32, 64]}"
   }
 }
-
-
 #============ new conv layer ===============
 layer {
   bottom: "res31_scale"
@@ -4297,6 +4296,7 @@ layer {
   type: "ReLU"
 }
 #============== RCNN ===============
+
 layer {
   name: "roi_pool"
   type: "ROIPooling"
@@ -4421,6 +4421,9 @@ layer {
     }
   }
 }
+
+
+
 layer {
   name: "fc6_0"
   type: "InnerProduct"
@@ -4501,24 +4504,6 @@ layer {
 }
 
 layer {
-  name: "cls_score_sum_0"
-  type: "Eltwise"
-  bottom: "cls_score_0"
-  bottom: "cls_score"
-  top: "cls_score_sum_0"
-  eltwise_param {
-    operation: SUM
-    coeff: 1
-    coeff: 1
-  }
-}
-layer {
-   name: "prob_0"
-   type: "Softmax"
-   bottom: "cls_score_sum_0"
-   top: "prob_0"
-}
-layer {
   name: "fc6_1"
   type: "InnerProduct"
   bottom: "roi_pool"
@@ -4597,24 +4582,6 @@ layer {
   }
 }
 
-layer {
-  name: "cls_score_sum_1"
-  type: "Eltwise"
-  bottom: "cls_score_1"
-  bottom: "cls_score"
-  top: "cls_score_sum_1"
-  eltwise_param {
-    operation: SUM
-    coeff: 1
-    coeff: 1
-  }
-}
-layer {
-   name: "prob_1"
-   type: "Softmax"
-   bottom: "cls_score_sum_1"
-   top: "prob_1"
-}
 layer {
   name: "fc6_2"
   type: "InnerProduct"
@@ -4695,24 +4662,6 @@ layer {
 }
 
 layer {
-  name: "cls_score_sum_2"
-  type: "Eltwise"
-  bottom: "cls_score_2"
-  bottom: "cls_score"
-  top: "cls_score_sum_2"
-  eltwise_param {
-    operation: SUM
-    coeff: 1
-    coeff: 1
-  }
-}
-layer {
-   name: "prob_2"
-   type: "Softmax"
-   bottom: "cls_score_sum_2"
-   top: "prob_2"
-}
-layer {
   name: "fc6_3"
   type: "InnerProduct"
   bottom: "roi_pool"
@@ -4791,24 +4740,6 @@ layer {
   }
 }
 
-layer {
-  name: "cls_score_sum_3"
-  type: "Eltwise"
-  bottom: "cls_score_3"
-  bottom: "cls_score"
-  top: "cls_score_sum_3"
-  eltwise_param {
-    operation: SUM
-    coeff: 1
-    coeff: 1
-  }
-}
-layer {
-   name: "prob_3"
-   type: "Softmax"
-   bottom: "cls_score_sum_3"
-   top: "prob_3"
-}
 layer {
   name: "fc6_4"
   type: "InnerProduct"
@@ -4889,24 +4820,6 @@ layer {
 }
 
 layer {
-  name: "cls_score_sum_4"
-  type: "Eltwise"
-  bottom: "cls_score_4"
-  bottom: "cls_score"
-  top: "cls_score_sum_4"
-  eltwise_param {
-    operation: SUM
-    coeff: 1
-    coeff: 1
-  }
-}
-layer {
-   name: "prob_4"
-   type: "Softmax"
-   bottom: "cls_score_sum_4"
-   top: "prob_4"
-}
-layer {
   name: "fc6_5"
   type: "InnerProduct"
   bottom: "roi_pool"
@@ -4985,24 +4898,6 @@ layer {
   }
 }
 
-layer {
-  name: "cls_score_sum_5"
-  type: "Eltwise"
-  bottom: "cls_score_5"
-  bottom: "cls_score"
-  top: "cls_score_sum_5"
-  eltwise_param {
-    operation: SUM
-    coeff: 1
-    coeff: 1
-  }
-}
-layer {
-   name: "prob_5"
-   type: "Softmax"
-   bottom: "cls_score_sum_5"
-   top: "prob_5"
-}
 layer {
   name: "fc6_6"
   type: "InnerProduct"
@@ -5083,24 +4978,6 @@ layer {
 }
 
 layer {
-  name: "cls_score_sum_6"
-  type: "Eltwise"
-  bottom: "cls_score_6"
-  bottom: "cls_score"
-  top: "cls_score_sum_6"
-  eltwise_param {
-    operation: SUM
-    coeff: 1
-    coeff: 1
-  }
-}
-layer {
-   name: "prob_6"
-   type: "Softmax"
-   bottom: "cls_score_sum_6"
-   top: "prob_6"
-}
-layer {
   name: "fc6_7"
   type: "InnerProduct"
   bottom: "roi_pool"
@@ -5179,24 +5056,6 @@ layer {
   }
 }
 
-layer {
-  name: "cls_score_sum_7"
-  type: "Eltwise"
-  bottom: "cls_score_7"
-  bottom: "cls_score"
-  top: "cls_score_sum_7"
-  eltwise_param {
-    operation: SUM
-    coeff: 1
-    coeff: 1
-  }
-}
-layer {
-   name: "prob_7"
-   type: "Softmax"
-   bottom: "cls_score_sum_7"
-   top: "prob_7"
-}
 layer {
   name: "fc6_8"
   type: "InnerProduct"
@@ -5277,24 +5136,6 @@ layer {
 }
 
 layer {
-  name: "cls_score_sum_8"
-  type: "Eltwise"
-  bottom: "cls_score_8"
-  bottom: "cls_score"
-  top: "cls_score_sum_8"
-  eltwise_param {
-    operation: SUM
-    coeff: 1
-    coeff: 1
-  }
-}
-layer {
-   name: "prob_8"
-   type: "Softmax"
-   bottom: "cls_score_sum_8"
-   top: "prob_8"
-}
-layer {
   name: "fc6_9"
   type: "InnerProduct"
   bottom: "roi_pool"
@@ -5373,24 +5214,6 @@ layer {
   }
 }
 
-layer {
-  name: "cls_score_sum_9"
-  type: "Eltwise"
-  bottom: "cls_score_9"
-  bottom: "cls_score"
-  top: "cls_score_sum_9"
-  eltwise_param {
-    operation: SUM
-    coeff: 1
-    coeff: 1
-  }
-}
-layer {
-   name: "prob_9"
-   type: "Softmax"
-   bottom: "cls_score_sum_9"
-   top: "prob_9"
-}
 layer {
   name: "fc6_10"
   type: "InnerProduct"
@@ -5471,24 +5294,6 @@ layer {
 }
 
 layer {
-  name: "cls_score_sum_10"
-  type: "Eltwise"
-  bottom: "cls_score_10"
-  bottom: "cls_score"
-  top: "cls_score_sum_10"
-  eltwise_param {
-    operation: SUM
-    coeff: 1
-    coeff: 1
-  }
-}
-layer {
-   name: "prob_10"
-   type: "Softmax"
-   bottom: "cls_score_sum_10"
-   top: "prob_10"
-}
-layer {
   name: "fc6_11"
   type: "InnerProduct"
   bottom: "roi_pool"
@@ -5567,24 +5372,6 @@ layer {
   }
 }
 
-layer {
-  name: "cls_score_sum_11"
-  type: "Eltwise"
-  bottom: "cls_score_11"
-  bottom: "cls_score"
-  top: "cls_score_sum_11"
-  eltwise_param {
-    operation: SUM
-    coeff: 1
-    coeff: 1
-  }
-}
-layer {
-   name: "prob_11"
-   type: "Softmax"
-   bottom: "cls_score_sum_11"
-   top: "prob_11"
-}
 layer {
   name: "fc6_12"
   type: "InnerProduct"
@@ -5665,24 +5452,6 @@ layer {
 }
 
 layer {
-  name: "cls_score_sum_12"
-  type: "Eltwise"
-  bottom: "cls_score_12"
-  bottom: "cls_score"
-  top: "cls_score_sum_12"
-  eltwise_param {
-    operation: SUM
-    coeff: 1
-    coeff: 1
-  }
-}
-layer {
-   name: "prob_12"
-   type: "Softmax"
-   bottom: "cls_score_sum_12"
-   top: "prob_12"
-}
-layer {
   name: "fc6_13"
   type: "InnerProduct"
   bottom: "roi_pool"
@@ -5762,24 +5531,6 @@ layer {
 }
 
 layer {
-  name: "cls_score_sum_13"
-  type: "Eltwise"
-  bottom: "cls_score_13"
-  bottom: "cls_score"
-  top: "cls_score_sum_13"
-  eltwise_param {
-    operation: SUM
-    coeff: 1
-    coeff: 1
-  }
-}
-layer {
-   name: "prob_13"
-   type: "Softmax"
-   bottom: "cls_score_sum_13"
-   top: "prob_13"
-}
-layer {
   name: "fc6_14"
   type: "InnerProduct"
   bottom: "roi_pool"
@@ -5858,50 +5609,83 @@ layer {
   }
 }
 
-layer {
-  name: "cls_score_sum_14"
-  type: "Eltwise"
-  bottom: "cls_score_14"
-  bottom: "cls_score"
-  top: "cls_score_sum_14"
-  eltwise_param {
-    operation: SUM
-    coeff: 1
-    coeff: 1
-  }
-}
-layer {
-   name: "prob_14"
-   type: "Softmax"
-   bottom: "cls_score_sum_14"
-   top: "prob_14"
-}
 
 layer {
   name: 'rcnn-ancors'
   type: 'Python'
   bottom: 'rois'
-  bottom: "prob_0"
-bottom: "prob_1"
-bottom: "prob_2"
-bottom: "prob_3"
-bottom: "prob_4"
-bottom: "prob_5"
-bottom: "prob_6"
-bottom: "prob_7"
-bottom: "prob_8"
-bottom: "prob_9"
-bottom: "prob_10"
-bottom: "prob_11"
-bottom: "prob_12"
-bottom: "prob_13"
-bottom: "prob_14"
+  bottom: 'cls_score'
+  bottom: "cls_score_0"
+bottom: "cls_score_1"
+bottom: "cls_score_2"
+bottom: "cls_score_3"
+bottom: "cls_score_4"
+bottom: "cls_score_5"
+bottom: "cls_score_6"
+bottom: "cls_score_7"
+bottom: "cls_score_8"
+bottom: "cls_score_9"
+bottom: "cls_score_10"
+bottom: "cls_score_11"
+bottom: "cls_score_12"
+bottom: "cls_score_13"
+bottom: "cls_score_14"
 
-  top: 'cls_prob'
-  #top: 'bbox_pred'
+  top: 'scores_all'
   python_param {
-    module: 'rpn.rcnn_deploy_layer_multi'
-    layer: 'RCNNDeployLayer'
+    module: 'rpn.rcnn_layer_multi_zero'
+    layer: 'RCNNLayer'
     param_str: "{'ratios': [0.5, 1, 2], 'scales': [2, 4, 8, 16, 32]}"
   }
+}
+
+
+layer {
+  name: "score_hidden"
+  type: "Convolution"
+  bottom: "scores_all"
+  top: "score_hidden"
+  convolution_param {
+    num_output: 30
+    kernel_size: 1
+    weight_filler {
+      type: "msra"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  name: "cls_score_nonlin"
+  type: "Convolution"
+  bottom: "score_hidden"
+  top: "cls_score_nonlin"
+  convolution_param {
+    num_output: 1
+    kernel_size: 1
+    weight_filler {
+      type: "msra"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+    name: "cls_score-fl"
+    type: "Flatten"
+    bottom: "cls_score_nonlin"
+    top: "cls_score-fl"
+  }
+layer {
+  name: "cls_prob"
+  type: "Softmax"
+  bottom: "cls_score-fl"
+  top: "cls_prob"
+  
 }
