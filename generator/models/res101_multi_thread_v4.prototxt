@@ -4579,31 +4579,6 @@ layer {
 }
 
 layer {
-  name: "cls_score_0/sigm"
-  type: "Softmax"
-  bottom: "cls_score_0"
-  top: "cls_score_0"
-}
-
-
-
-layer {
-  type: "Scale"
-  name: "cls_score_0/scale"
-  bottom: "cls_score_0"
-  top: "cls_score_0"
-  scale_param {
-    num_axes: 0
-    bias_term: false
-    filler{
-     value: 3
-    }
-  }
-   param {
-    lr_mult: 0.0
-    decay_mult: 0.0
-  }
-}layer {
   name: "fc6_1"
   type: "InnerProduct"
   bottom: "roi_pool"
@@ -4683,31 +4658,6 @@ layer {
 }
 
 layer {
-  name: "cls_score_1/sigm"
-  type: "Softmax"
-  bottom: "cls_score_1"
-  top: "cls_score_1"
-}
-
-
-
-layer {
-  type: "Scale"
-  name: "cls_score_1/scale"
-  bottom: "cls_score_1"
-  top: "cls_score_1"
-  scale_param {
-    num_axes: 0
-    bias_term: false
-    filler{
-     value: 3
-    }
-  }
-   param {
-    lr_mult: 0.0
-    decay_mult: 0.0
-  }
-}layer {
   name: "fc6_2"
   type: "InnerProduct"
   bottom: "roi_pool"
@@ -4787,31 +4737,6 @@ layer {
 }
 
 layer {
-  name: "cls_score_2/sigm"
-  type: "Softmax"
-  bottom: "cls_score_2"
-  top: "cls_score_2"
-}
-
-
-
-layer {
-  type: "Scale"
-  name: "cls_score_2/scale"
-  bottom: "cls_score_2"
-  top: "cls_score_2"
-  scale_param {
-    num_axes: 0
-    bias_term: false
-    filler{
-     value: 3
-    }
-  }
-   param {
-    lr_mult: 0.0
-    decay_mult: 0.0
-  }
-}layer {
   name: "fc6_3"
   type: "InnerProduct"
   bottom: "roi_pool"
@@ -4891,31 +4816,6 @@ layer {
 }
 
 layer {
-  name: "cls_score_3/sigm"
-  type: "Softmax"
-  bottom: "cls_score_3"
-  top: "cls_score_3"
-}
-
-
-
-layer {
-  type: "Scale"
-  name: "cls_score_3/scale"
-  bottom: "cls_score_3"
-  top: "cls_score_3"
-  scale_param {
-    num_axes: 0
-    bias_term: false
-    filler{
-     value: 3
-    }
-  }
-   param {
-    lr_mult: 0.0
-    decay_mult: 0.0
-  }
-}layer {
   name: "fc6_4"
   type: "InnerProduct"
   bottom: "roi_pool"
@@ -4995,31 +4895,6 @@ layer {
 }
 
 layer {
-  name: "cls_score_4/sigm"
-  type: "Softmax"
-  bottom: "cls_score_4"
-  top: "cls_score_4"
-}
-
-
-
-layer {
-  type: "Scale"
-  name: "cls_score_4/scale"
-  bottom: "cls_score_4"
-  top: "cls_score_4"
-  scale_param {
-    num_axes: 0
-    bias_term: false
-    filler{
-     value: 3
-    }
-  }
-   param {
-    lr_mult: 0.0
-    decay_mult: 0.0
-  }
-}layer {
   name: "fc6_5"
   type: "InnerProduct"
   bottom: "roi_pool"
@@ -5099,31 +4974,6 @@ layer {
 }
 
 layer {
-  name: "cls_score_5/sigm"
-  type: "Softmax"
-  bottom: "cls_score_5"
-  top: "cls_score_5"
-}
-
-
-
-layer {
-  type: "Scale"
-  name: "cls_score_5/scale"
-  bottom: "cls_score_5"
-  top: "cls_score_5"
-  scale_param {
-    num_axes: 0
-    bias_term: false
-    filler{
-     value: 3
-    }
-  }
-   param {
-    lr_mult: 0.0
-    decay_mult: 0.0
-  }
-}layer {
   name: "fc6_6"
   type: "InnerProduct"
   bottom: "roi_pool"
@@ -5203,31 +5053,6 @@ layer {
 }
 
 layer {
-  name: "cls_score_6/sigm"
-  type: "Softmax"
-  bottom: "cls_score_6"
-  top: "cls_score_6"
-}
-
-
-
-layer {
-  type: "Scale"
-  name: "cls_score_6/scale"
-  bottom: "cls_score_6"
-  top: "cls_score_6"
-  scale_param {
-    num_axes: 0
-    bias_term: false
-    filler{
-     value: 3
-    }
-  }
-   param {
-    lr_mult: 0.0
-    decay_mult: 0.0
-  }
-}layer {
   name: "fc6_7"
   type: "InnerProduct"
   bottom: "roi_pool"
@@ -5307,31 +5132,6 @@ layer {
 }
 
 layer {
-  name: "cls_score_7/sigm"
-  type: "Softmax"
-  bottom: "cls_score_7"
-  top: "cls_score_7"
-}
-
-
-
-layer {
-  type: "Scale"
-  name: "cls_score_7/scale"
-  bottom: "cls_score_7"
-  top: "cls_score_7"
-  scale_param {
-    num_axes: 0
-    bias_term: false
-    filler{
-     value: 3
-    }
-  }
-   param {
-    lr_mult: 0.0
-    decay_mult: 0.0
-  }
-}layer {
   name: "fc6_8"
   type: "InnerProduct"
   bottom: "roi_pool"
@@ -5411,31 +5211,6 @@ layer {
 }
 
 layer {
-  name: "cls_score_8/sigm"
-  type: "Softmax"
-  bottom: "cls_score_8"
-  top: "cls_score_8"
-}
-
-
-
-layer {
-  type: "Scale"
-  name: "cls_score_8/scale"
-  bottom: "cls_score_8"
-  top: "cls_score_8"
-  scale_param {
-    num_axes: 0
-    bias_term: false
-    filler{
-     value: 3
-    }
-  }
-   param {
-    lr_mult: 0.0
-    decay_mult: 0.0
-  }
-}layer {
   name: "fc6_9"
   type: "InnerProduct"
   bottom: "roi_pool"
@@ -5515,31 +5290,6 @@ layer {
 }
 
 layer {
-  name: "cls_score_9/sigm"
-  type: "Softmax"
-  bottom: "cls_score_9"
-  top: "cls_score_9"
-}
-
-
-
-layer {
-  type: "Scale"
-  name: "cls_score_9/scale"
-  bottom: "cls_score_9"
-  top: "cls_score_9"
-  scale_param {
-    num_axes: 0
-    bias_term: false
-    filler{
-     value: 3
-    }
-  }
-   param {
-    lr_mult: 0.0
-    decay_mult: 0.0
-  }
-}layer {
   name: "fc6_10"
   type: "InnerProduct"
   bottom: "roi_pool"
@@ -5619,31 +5369,6 @@ layer {
 }
 
 layer {
-  name: "cls_score_10/sigm"
-  type: "Softmax"
-  bottom: "cls_score_10"
-  top: "cls_score_10"
-}
-
-
-
-layer {
-  type: "Scale"
-  name: "cls_score_10/scale"
-  bottom: "cls_score_10"
-  top: "cls_score_10"
-  scale_param {
-    num_axes: 0
-    bias_term: false
-    filler{
-     value: 3
-    }
-  }
-   param {
-    lr_mult: 0.0
-    decay_mult: 0.0
-  }
-}layer {
   name: "fc6_11"
   type: "InnerProduct"
   bottom: "roi_pool"
@@ -5723,31 +5448,6 @@ layer {
 }
 
 layer {
-  name: "cls_score_11/sigm"
-  type: "Softmax"
-  bottom: "cls_score_11"
-  top: "cls_score_11"
-}
-
-
-
-layer {
-  type: "Scale"
-  name: "cls_score_11/scale"
-  bottom: "cls_score_11"
-  top: "cls_score_11"
-  scale_param {
-    num_axes: 0
-    bias_term: false
-    filler{
-     value: 3
-    }
-  }
-   param {
-    lr_mult: 0.0
-    decay_mult: 0.0
-  }
-}layer {
   name: "fc6_12"
   type: "InnerProduct"
   bottom: "roi_pool"
@@ -5827,31 +5527,6 @@ layer {
 }
 
 layer {
-  name: "cls_score_12/sigm"
-  type: "Softmax"
-  bottom: "cls_score_12"
-  top: "cls_score_12"
-}
-
-
-
-layer {
-  type: "Scale"
-  name: "cls_score_12/scale"
-  bottom: "cls_score_12"
-  top: "cls_score_12"
-  scale_param {
-    num_axes: 0
-    bias_term: false
-    filler{
-     value: 3
-    }
-  }
-   param {
-    lr_mult: 0.0
-    decay_mult: 0.0
-  }
-}layer {
   name: "fc6_13"
   type: "InnerProduct"
   bottom: "roi_pool"
@@ -5931,31 +5606,6 @@ layer {
 }
 
 layer {
-  name: "cls_score_13/sigm"
-  type: "Softmax"
-  bottom: "cls_score_13"
-  top: "cls_score_13"
-}
-
-
-
-layer {
-  type: "Scale"
-  name: "cls_score_13/scale"
-  bottom: "cls_score_13"
-  top: "cls_score_13"
-  scale_param {
-    num_axes: 0
-    bias_term: false
-    filler{
-     value: 3
-    }
-  }
-   param {
-    lr_mult: 0.0
-    decay_mult: 0.0
-  }
-}layer {
   name: "fc6_14"
   type: "InnerProduct"
   bottom: "roi_pool"
@@ -6034,60 +5684,6 @@ layer {
   }
 }
 
-layer {
-  name: "cls_score_14/sigm"
-  type: "Softmax"
-  bottom: "cls_score_14"
-  top: "cls_score_14"
-}
-
-
-
-layer {
-  type: "Scale"
-  name: "cls_score_14/scale"
-  bottom: "cls_score_14"
-  top: "cls_score_14"
-  scale_param {
-    num_axes: 0
-    bias_term: false
-    filler{
-     value: 3
-    }
-  }
-   param {
-    lr_mult: 0.0
-    decay_mult: 0.0
-  }
-}
-
-layer {
-  name: "cls_score/sigm"
-  type: "Softmax"
-  bottom: "cls_score"
-  top: "cls_score"
-}
-
-
-
-layer {
-  type: "Scale"
-  name: "cls_score/scale"
-  bottom: "cls_score"
-  top: "cls_score"
-  scale_param {
-    num_axes: 0
-    bias_term: false
-    filler{
-     value: 6
-    }
-  }
-   param {
-    lr_mult: 0.0
-    decay_mult: 0.0
-  }
-}
-
 
 layer {
   name: 'rcnn-ancors'
@@ -6120,27 +5716,9 @@ bottom: "cls_score_14"
 
 
 layer {
-  name: "score_hidden"
-  type: "Convolution"
-  bottom: "scores_all"
-  top: "score_hidden"
-  convolution_param {
-    num_output: 30
-    kernel_size: 1
-    weight_filler {
-      type: "msra"
-      std: 0.01
-    }
-    bias_filler {
-      type: "constant"
-      value: 0
-    }
-  }
-}
-layer {
   name: "cls_score_nonlin"
   type: "Convolution"
-  bottom: "score_hidden"
+  bottom: "scores_all"
   top: "cls_score_nonlin"
   convolution_param {
     num_output: 1
@@ -6153,14 +5731,6 @@ layer {
       type: "constant"
       value: 0
     }
-  }
-  param {
-    lr_mult: 1.0
-    decay_mult: 0.01
-  }
-  param {
-    lr_mult: 0.0
-    decay_mult: 0.0
   }
 }
 layer {
@@ -6179,4 +5749,14 @@ layer {
   propagate_down: 0
   top: "loss_cls"
   loss_weight: 1
+}
+layer {
+  name: "loss_cls_main_thr"
+  type: "SoftmaxWithLoss"
+  bottom: "cls_score"
+  bottom: "labels"
+  propagate_down: 1
+  propagate_down: 0
+  top: "loss_cls_main_thr"
+  loss_weight: 0.05
 }
