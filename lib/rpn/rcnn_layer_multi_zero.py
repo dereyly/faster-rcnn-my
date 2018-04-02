@@ -46,8 +46,9 @@ class RCNNLayer(caffe.Layer):
         x_ctr = (_base_size-1.0) / 2
         self._anchors-=x_ctr
         self._num_anchors = self._anchors.shape[0]
+        #self._num_anchors+=1
         self.th_ov=0.5
-        top[0].reshape(1,self._num_anchors+1,self.num_cls,1)
+        top[0].reshape(1,self._num_anchors,self.num_cls,1)
         #top[0].reshape(1, 15, 21, 1)
 
     def forward(self, bottom, top):
@@ -55,7 +56,7 @@ class RCNNLayer(caffe.Layer):
         # (i.e., rpn.proposal_layer.ProposalLayer), or any other source
         all_rois = bottom[0].data
         scores=[]
-        for i in range(self._num_anchors+1): #+1 -- first main thread
+        for i in range(self._num_anchors): #+1 -- first main thread
             scores.append(bottom[1+i].data.copy())
         scores = np.array(scores)
 
@@ -81,11 +82,12 @@ class RCNNLayer(caffe.Layer):
             idx_ov_bool[k,id]=True
 
         #idx_ov=np.where(overlaps>self.th_ov)
-        scores_out = np.zeros((self.batch_size,self._num_anchors+1,self.num_cls))
+        scores_out = np.zeros((self.batch_size,self._num_anchors,self.num_cls))
         self.idx_ov =[]
-        self.ov_mat=np.zeros((self.batch_size,self._num_anchors+1))
+        self.ov_mat=np.zeros((self.batch_size,self._num_anchors))
         for k in range(self.batch_size):
-            idx=np.append(np.where(idx_ov_bool[k])[0]+1,0)
+            #idx=np.append(np.where(idx_ov_bool[k])[0]+1,0) #ToDO main thread
+            idx = np.where(idx_ov_bool[k])[0]
             self.idx_ov.append(idx.tolist())
             scores_out[k,idx] = scores[idx, k]
             self.ov_mat[k,idx]=1
@@ -109,7 +111,7 @@ class RCNNLayer(caffe.Layer):
         """This layer does not propagate gradients."""
         # zz=0
 
-        for z in range(self._num_anchors+1): #+1 -- first main thread
+        for z in range(self._num_anchors): #+1 -- first main thread
             for i in range(self.batch_size):
                 # a=top[0].diff
                 #b=bottom[z+1].diff
