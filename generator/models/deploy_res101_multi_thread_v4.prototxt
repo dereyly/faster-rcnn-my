@@ -5677,7 +5677,7 @@ layer {
 layer {
   name: "cls_prob"
   type: "Softmax"
-  bottom: "cls_score_sum"
+  bottom: "cls_score"
   top: "cls_prob"
   
 }

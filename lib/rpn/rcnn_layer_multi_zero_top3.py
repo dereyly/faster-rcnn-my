@@ -26,7 +26,7 @@ import numpy.random as npr
 from fast_rcnn.config import cfg
 from fast_rcnn.bbox_transform import bbox_transform
 from utils.cython_bbox import bbox_overlaps
-from generate_anchors import generate_anchors
+from lib.rpn.generate_anchors import generate_anchors
 DEBUG = False
 
 class RCNNLayer(caffe.Layer):
@@ -76,12 +76,16 @@ class RCNNLayer(caffe.Layer):
             np.ascontiguousarray(centred_rois, dtype=np.float),
             np.ascontiguousarray(self._anchors, dtype=np.float))
         gt_assignment = overlaps.argmax(axis=1)
+        gt_top = (-overlaps).argsort(axis=1)
         max_overlaps = overlaps.max(axis=1)
 
-        idx_ov_bool=overlaps>self.th_ov
-        for k,id in enumerate(gt_assignment):
-            idx_ov_bool[k,id]=True
 
+        idx_ov_bool = np.zeros(overlaps.shape,dtype=bool)
+
+        for k in range(gt_top.shape[0]):
+            for j in range(3):
+                id = gt_top[k,j]
+                idx_ov_bool[k, id] = True
         #idx_ov=np.where(overlaps>self.th_ov)
         scores_out = np.zeros((self.batch_size,self._num_anchors,self.num_cls))
         self.idx_ov =[]
