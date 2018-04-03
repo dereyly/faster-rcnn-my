@@ -5772,7 +5772,7 @@ layer {
   bottom: 'labels'
   top: 'cls_lost_my'
   python_param {
-    module: 'fast_rcnn.skip_softmax_loss'
+    module: 'fast_rcnn.skip_softmax_loss_v2'
     layer: 'SoftmaxLossLayer'
    
   }
