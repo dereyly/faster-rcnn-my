@@ -59,6 +59,9 @@ class SoftmaxLossLayer(caffe.Layer):
         self.lbl_gt=np.zeros((sz[0],sz[1]),dtype=np.float32)
         lbl_idx=bottom[1].data
         lbl_idx=lbl_idx.astype(dtype= int)
+        if len(lbl_idx.shape)==4:
+            #lbl_idx=np.squeeze(lbl_idx,axis=(2,3))
+            lbl_idx = lbl_idx.reshape(-1)
         for i in range(self.batch_sz):
             self.lbl_gt[i,lbl_idx[i]]=1
         soft_max=softmax(bottom[0].data)
