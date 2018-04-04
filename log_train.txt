@@ -84,3 +84,35 @@ I0403 05:34:12.149243  9046 solver.cpp:238]     Train net output #4: rpn_loss_bb
 I0403 05:34:12.149247  9046 sgd_solver.cpp:105] Iteration 179980, lr = 1e-05
 speed: 0.316s / iter
 Wrote snapshot to: /home/dereyly/progs/py-RFCN-priv/output/faster_rcnn_end2end/voc_2007_trainval/res101-lin_ss_iter_180000.caffemodel
+----------------------------
+I0403 22:33:28.100306 72157 sgd_solver.cpp:105] Iteration 119920, lr = 1e-05
+I0403 22:33:34.884290 72157 solver.cpp:218] Iteration 119940 (2.94831 iter/s, 6.78354s/20 iters), loss = 0.266225
+I0403 22:33:34.884344 72157 solver.cpp:237]     Train net output #0: cls_lost_my = 0.168644 (* 1 = 0.168644 loss)
+I0403 22:33:34.884351 72157 solver.cpp:237]     Train net output #1: loss_bbox = 0.0503891 (* 1 = 0.0503891 loss)
+I0403 22:33:34.884356 72157 solver.cpp:237]     Train net output #2: loss_cls = 0.142597 (* 1 = 0.142597 loss)
+I0403 22:33:34.884362 72157 solver.cpp:237]     Train net output #3: rpn_cls_loss = 0.00193318 (* 1 = 0.00193318 loss)
+I0403 22:33:34.884367 72157 solver.cpp:237]     Train net output #4: rpn_loss_bbox = 0.00441954 (* 1 = 0.00441954 loss)
+I0403 22:33:34.884374 72157 sgd_solver.cpp:105] Iteration 119940, lr = 1e-05
+('-- skip count -- ', 0.9966528110663093)
+I0403 22:33:41.773195 72157 solver.cpp:218] Iteration 119960 (2.90344 iter/s, 6.88838s/20 iters), loss = 0.141563
+I0403 22:33:41.773241 72157 solver.cpp:237]     Train net output #0: cls_lost_my = 0.00699888 (* 1 = 0.00699888 loss)
+I0403 22:33:41.773249 72157 solver.cpp:237]     Train net output #1: loss_bbox = 0.0501461 (* 1 = 0.0501461 loss)
+I0403 22:33:41.773254 72157 solver.cpp:237]     Train net output #2: loss_cls = 0.00559428 (* 1 = 0.00559428 loss)
+I0403 22:33:41.773260 72157 solver.cpp:237]     Train net output #3: rpn_cls_loss = 5.73616e-05 (* 1 = 5.73616e-05 loss)
+I0403 22:33:41.773265 72157 solver.cpp:237]     Train net output #4: rpn_loss_bbox = 8.52052e-05 (* 1 = 8.52052e-05 loss)
+I0403 22:33:41.773270 72157 sgd_solver.cpp:105] Iteration 119960, lr = 1e-05
+I0403 22:33:48.535380 72157 solver.cpp:218] Iteration 119980 (2.95785 iter/s, 6.76167s/20 iters), loss = 0.456617
+I0403 22:33:48.535431 72157 solver.cpp:237]     Train net output #0: cls_lost_my = 0.134883 (* 1 = 0.134883 loss)
+I0403 22:33:48.535439 72157 solver.cpp:237]     Train net output #1: loss_bbox = 0.0243415 (* 1 = 0.0243415 loss)
+I0403 22:33:48.535445 72157 solver.cpp:237]     Train net output #2: loss_cls = 0.0911803 (* 1 = 0.0911803 loss)
+I0403 22:33:48.535451 72157 solver.cpp:237]     Train net output #3: rpn_cls_loss = 0.0210325 (* 1 = 0.0210325 loss)
+I0403 22:33:48.535456 72157 solver.cpp:237]     Train net output #4: rpn_loss_bbox = 0.0285932 (* 1 = 0.0285932 loss)
+I0403 22:33:48.535461 72157 sgd_solver.cpp:105] Iteration 119980, lr = 1e-05
+[   4949.   30036.  132524.  734808. 2603293.   46065.    5846.   39134.
+  188306.  890334. 3101996.  178123.    8460.   75421.  298680.  977403.
+ 1272884.   38793.]
+[  1009.   2283.  17839. 103791. 308941.      0.   1122.    713.      0.
+     77.  95329.     48.   3024.  12668.  36054.  50245.   9616.      0.]
+[   0.  202. 4372. 6144.    0.    0.    0.    0.    0.    0.    0.    0.
+    9.    0.    0.    0.    0.    0.]
+('-- skip count -- ', 1.000884822525648)

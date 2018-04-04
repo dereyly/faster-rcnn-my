@@ -4389,7 +4389,7 @@ layer {
     decay_mult: 0
   }
   inner_product_param {
-    num_output: 1024
+    num_output: 128
     weight_filler {
       type: "gaussian"
       std: 0.01
@@ -4420,7 +4420,7 @@ layer {
     decay_mult: 0
   }
   inner_product_param {
-    num_output: 1024
+    num_output: 128
     weight_filler {
       type: "gaussian"
       std: 0.01
@@ -4513,7 +4513,7 @@ layer {
     decay_mult: 0
   }
   inner_product_param {
-    num_output: 128
+    num_output: 64
     weight_filler {
       type: "gaussian"
       std: 0.01
@@ -4546,7 +4546,7 @@ layer {
     decay_mult: 0.0
   }
   inner_product_param {
-    num_output: 128
+    num_output: 64
     weight_filler {
       type: "xavier"
     }
@@ -4592,7 +4592,7 @@ layer {
     decay_mult: 0
   }
   inner_product_param {
-    num_output: 128
+    num_output: 64
     weight_filler {
       type: "gaussian"
       std: 0.01
@@ -4625,7 +4625,7 @@ layer {
     decay_mult: 0.0
   }
   inner_product_param {
-    num_output: 128
+    num_output: 64
     weight_filler {
       type: "xavier"
     }
@@ -4671,7 +4671,7 @@ layer {
     decay_mult: 0
   }
   inner_product_param {
-    num_output: 128
+    num_output: 64
     weight_filler {
       type: "gaussian"
       std: 0.01
@@ -4704,7 +4704,7 @@ layer {
     decay_mult: 0.0
   }
   inner_product_param {
-    num_output: 128
+    num_output: 64
     weight_filler {
       type: "xavier"
     }
@@ -4750,7 +4750,7 @@ layer {
     decay_mult: 0
   }
   inner_product_param {
-    num_output: 128
+    num_output: 64
     weight_filler {
       type: "gaussian"
       std: 0.01
@@ -4783,7 +4783,7 @@ layer {
     decay_mult: 0.0
   }
   inner_product_param {
-    num_output: 128
+    num_output: 64
     weight_filler {
       type: "xavier"
     }
@@ -4829,7 +4829,7 @@ layer {
     decay_mult: 0
   }
   inner_product_param {
-    num_output: 128
+    num_output: 64
     weight_filler {
       type: "gaussian"
       std: 0.01
@@ -4862,7 +4862,7 @@ layer {
     decay_mult: 0.0
   }
   inner_product_param {
-    num_output: 128
+    num_output: 64
     weight_filler {
       type: "xavier"
     }
@@ -4908,7 +4908,7 @@ layer {
     decay_mult: 0
   }
   inner_product_param {
-    num_output: 128
+    num_output: 64
     weight_filler {
       type: "gaussian"
       std: 0.01
@@ -4941,7 +4941,7 @@ layer {
     decay_mult: 0.0
   }
   inner_product_param {
-    num_output: 128
+    num_output: 64
     weight_filler {
       type: "xavier"
     }
@@ -4987,7 +4987,7 @@ layer {
     decay_mult: 0
   }
   inner_product_param {
-    num_output: 128
+    num_output: 64
     weight_filler {
       type: "gaussian"
       std: 0.01
@@ -5020,7 +5020,7 @@ layer {
     decay_mult: 0.0
   }
   inner_product_param {
-    num_output: 128
+    num_output: 64
     weight_filler {
       type: "xavier"
     }
@@ -5066,7 +5066,7 @@ layer {
     decay_mult: 0
   }
   inner_product_param {
-    num_output: 128
+    num_output: 64
     weight_filler {
       type: "gaussian"
       std: 0.01
@@ -5099,7 +5099,7 @@ layer {
     decay_mult: 0.0
   }
   inner_product_param {
-    num_output: 128
+    num_output: 64
     weight_filler {
       type: "xavier"
     }
@@ -5145,7 +5145,7 @@ layer {
     decay_mult: 0
   }
   inner_product_param {
-    num_output: 128
+    num_output: 64
     weight_filler {
       type: "gaussian"
       std: 0.01
@@ -5178,7 +5178,7 @@ layer {
     decay_mult: 0.0
   }
   inner_product_param {
-    num_output: 128
+    num_output: 64
     weight_filler {
       type: "xavier"
     }
@@ -5224,7 +5224,7 @@ layer {
     decay_mult: 0
   }
   inner_product_param {
-    num_output: 128
+    num_output: 64
     weight_filler {
       type: "gaussian"
       std: 0.01
@@ -5257,7 +5257,7 @@ layer {
     decay_mult: 0.0
   }
   inner_product_param {
-    num_output: 128
+    num_output: 64
     weight_filler {
       type: "xavier"
     }
@@ -5303,7 +5303,7 @@ layer {
     decay_mult: 0
   }
   inner_product_param {
-    num_output: 128
+    num_output: 64
     weight_filler {
       type: "gaussian"
       std: 0.01
@@ -5336,7 +5336,7 @@ layer {
     decay_mult: 0.0
   }
   inner_product_param {
-    num_output: 128
+    num_output: 64
     weight_filler {
       type: "xavier"
     }
@@ -5382,7 +5382,7 @@ layer {
     decay_mult: 0
   }
   inner_product_param {
-    num_output: 128
+    num_output: 64
     weight_filler {
       type: "gaussian"
       std: 0.01
@@ -5415,7 +5415,7 @@ layer {
     decay_mult: 0.0
   }
   inner_product_param {
-    num_output: 128
+    num_output: 64
     weight_filler {
       type: "xavier"
     }
@@ -5461,7 +5461,7 @@ layer {
     decay_mult: 0
   }
   inner_product_param {
-    num_output: 128
+    num_output: 64
     weight_filler {
       type: "gaussian"
       std: 0.01
@@ -5494,7 +5494,7 @@ layer {
     decay_mult: 0.0
   }
   inner_product_param {
-    num_output: 128
+    num_output: 64
     weight_filler {
       type: "xavier"
     }
@@ -5540,7 +5540,7 @@ layer {
     decay_mult: 0
   }
   inner_product_param {
-    num_output: 128
+    num_output: 64
     weight_filler {
       type: "gaussian"
       std: 0.01
@@ -5573,7 +5573,7 @@ layer {
     decay_mult: 0.0
   }
   inner_product_param {
-    num_output: 128
+    num_output: 64
     weight_filler {
       type: "xavier"
     }
@@ -5619,7 +5619,7 @@ layer {
     decay_mult: 0
   }
   inner_product_param {
-    num_output: 128
+    num_output: 64
     weight_filler {
       type: "gaussian"
       std: 0.01
@@ -5652,7 +5652,7 @@ layer {
     decay_mult: 0.0
   }
   inner_product_param {
-    num_output: 128
+    num_output: 64
     weight_filler {
       type: "xavier"
     }
@@ -5717,27 +5717,9 @@ bottom: "cls_score_14"
 
 
 layer {
-  name: "score_hidden"
-  type: "Convolution"
-  bottom: "scores_all"
-  top: "score_hidden"
-  convolution_param {
-    num_output: 30
-    kernel_size: 1
-    weight_filler {
-      type: "msra"
-      std: 0.01
-    }
-    bias_filler {
-      type: "constant"
-      value: 0
-    }
-  }
-}
-layer {
   name: "cls_score_nonlin"
   type: "Convolution"
-  bottom: "score_hidden"
+  bottom: "scores_all"
   top: "cls_score_nonlin"
   convolution_param {
     num_output: 1
@@ -5752,6 +5734,7 @@ layer {
     }
   }
 }
+
 layer {
     name: "cls_score-fl"
     type: "Flatten"
@@ -5780,7 +5763,7 @@ layer {
   bottom: 'labels'
   top: 'cls_lost_my'
   python_param {
-    module: 'fast_rcnn.skip_softmax_loss_v2'
+    module: 'fast_rcnn.skip_softmax_loss_v4'
     layer: 'SoftmaxLossLayer'
    
   }

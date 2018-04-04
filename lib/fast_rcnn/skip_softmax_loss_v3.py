@@ -4,7 +4,7 @@ import sys
 #sys.path.append('/home/dereyly/progs/caffe-master-triplet/python')
 import caffe
 import numpy as np
-#ToDO soft OHEM
+
 '''
 layer {
   name: 'rcls_lost_my'
@@ -75,7 +75,7 @@ class SoftmaxLossLayer(caffe.Layer):
         self.diff[...] = soft_max-self.lbl_gt
 
         for i in range(self.batch_sz):
-            coeff=1-soft_max[i,lbl_idx[i]]
+            coeff=soft_max[i,lbl_idx[i]]
             self.diff[i]*=coeff
             self.skip_count+=coeff
         if self.count%100==0:
