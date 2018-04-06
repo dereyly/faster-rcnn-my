@@ -4240,6 +4240,21 @@ layer {
     normalize: true
   }
 }
+
+# layer {
+#   name: 'cls_lost_rpn'
+#   type: 'Python'
+#   bottom: 'rpn_cls_score_reshape'
+#   bottom: 'rpn_labels'
+#   top: 'cls_lost_rpn'
+#   python_param {
+#     module: 'fast_rcnn.skip_softmax_loss_v2'
+#     layer: 'SoftmaxLossLayer'
+   
+#   }
+#   loss_weight: 1
+# }
+
 layer {
   name: "rpn_loss_bbox"
   type: "SmoothL1Loss"
