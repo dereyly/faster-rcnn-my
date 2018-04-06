@@ -4399,6 +4399,7 @@ layer {
       value: 0
     }
   }
+  propagate_down: 0
 }
 layer {
   name: "fc1_relu"
@@ -5716,6 +5717,7 @@ bottom: "cls_score_14"
 
 
 
+
 layer {
   name: "cls_score_nonlin"
   type: "Convolution"
@@ -5734,7 +5736,6 @@ layer {
     }
   }
 }
-
 layer {
     name: "cls_score-fl"
     type: "Flatten"
@@ -5744,9 +5745,9 @@ layer {
 
 
 layer {
-  name: "loss_cls"
+  name: "loss_cl_main"
   type: "SoftmaxWithLoss"
-  bottom: "cls_score-fl"
+  bottom: "cls_score"
   bottom: "labels"
   propagate_down: 1
   propagate_down: 0
@@ -5754,27 +5755,18 @@ layer {
   loss_weight: 1
 }
 
-layer {
-  name: "loss_cls"
-  type: "SoftmaxWithLoss"
-  bottom: "cls_score"
-  bottom: "labels"
-  propagate_down: 1
-  propagate_down: 0
-  top: "loss_cls"
-  loss_weight: 0
-}
 
-# layer {
-#   name: 'cls_lost_my'
-#   type: 'Python'
-#   bottom: 'cls_score'
-#   bottom: 'labels'
-#   top: 'cls_lost_my'
-#   python_param {
-#     module: 'fast_rcnn.skip_softmax_loss_v4'
-#     layer: 'SoftmaxLossLayer'
+
+layer {
+  name: 'loss_cls_threads'
+  type: 'Python'
+  bottom: 'cls_score-fl'
+  bottom: 'labels'
+  top: 'cls_lost_my'
+  python_param {
+    module: 'fast_rcnn.skip_softmax_loss_v2'
+    layer: 'SoftmaxLossLayer'
    
-#   }
-#   loss_weight: 1
-# }
+  }
+  loss_weight: 1
+}

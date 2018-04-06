@@ -4399,6 +4399,7 @@ layer {
       value: 0
     }
   }
+  propagate_down: 0
 }
 layer {
   name: "fc1_relu"
@@ -5722,7 +5723,7 @@ layer {
   bottom: "scores_all"
   top: "score_hidden"
   convolution_param {
-    num_output: 30
+    num_output: 50
     kernel_size: 1
     weight_filler {
       type: "msra"

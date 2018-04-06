@@ -5708,7 +5708,7 @@ bottom: "cls_score_14"
 
   top: 'scores_all'
   python_param {
-    module: 'rpn.rcnn_layer_multi_zero_top3'
+    module: 'rpn.rcnn_layer_multi_zero'
     layer: 'RCNNLayer'
     param_str: "{'ratios': [0.5, 1, 2], 'scales': [2, 4, 8, 16, 32], 'main_thread':True}"
   }
@@ -5744,26 +5744,28 @@ layer {
 
 
 layer {
-  name: "loss_cls"
-  type: "SoftmaxWithLoss"
-  bottom: "cls_score-fl"
-  bottom: "labels"
-  propagate_down: 1
-  propagate_down: 0
-  top: "loss_cls"
+  name: 'loss_threads'
+  type: 'Python'
+  bottom: 'cls_score-fl'
+  bottom: 'labels'
+  top: 'loss_threads'
+  python_param {
+    module: 'fast_rcnn.skip_softmax_loss_v2'
+    layer: 'SoftmaxLossLayer'
+   
+  }
   loss_weight: 1
 }
 
 
-
 layer {
-  name: 'cls_lost_my'
+  name: 'loss_main'
   type: 'Python'
   bottom: 'cls_score'
   bottom: 'labels'
-  top: 'cls_lost_my'
+  top: 'loss_main'
   python_param {
-    module: 'fast_rcnn.skip_softmax_loss_v2'
+    module: 'fast_rcnn.skip_softmax_loss'
     layer: 'SoftmaxLossLayer'
    
   }

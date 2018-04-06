@@ -79,7 +79,7 @@ class SoftmaxLossLayer(caffe.Layer):
                 self.diff[i]=0
                 self.skip_count+=1
         if self.count%100==0:
-            print('-- skip count -- ',self.skip_count/(100.0*self.batch_sz))
+            print('-- skip count v1 -- ', 1- self.skip_count/(100.0*self.batch_sz))
             self.skip_count=0
         top[0].data[...] = np.sum(loss) / bottom[0].num
         #top[1].data[...] = loss

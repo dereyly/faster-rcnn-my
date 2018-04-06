@@ -93,7 +93,7 @@ class RCNNLayer(caffe.Layer):
         for k in range(self.batch_size):
             if self.main_thread:
                 #idx=np.append(np.where(idx_ov_bool[k])[0]+1,0) #ToDO main thread
-                idx = np.where(idx_ov_bool[k])[0]
+                idx = np.where(idx_ov_bool[k])[0]+1
             else:
                 idx = np.where(idx_ov_bool[k])[0]
             self.idx_ov.append(idx.tolist())
