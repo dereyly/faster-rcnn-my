@@ -43,6 +43,7 @@ class RCNNLayer(caffe.Layer):
         self.main_thread = layer_params.get('main_thread', False)
         self.num_cls=21
         self.pow_coef=1
+        self.disturb_main=True
         self._anchors = generate_anchors(base_size=_base_size, ratios=anchor_ratios, scales=np.array(anchor_scales))
         x_ctr = (_base_size-1.0) / 2
         self._anchors-=x_ctr
@@ -88,17 +89,25 @@ class RCNNLayer(caffe.Layer):
                 idx_ov_bool[k, id] = True
         #idx_ov=np.where(overlaps>self.th_ov)
         scores_out = np.zeros((self.batch_size,self._num_anchors,self.num_cls))
+        if self.disturb_main:
+            scores_out = np.zeros((self.batch_size, self._num_anchors, self.num_cls+1))
+
         self.idx_ov =[]
         self.ov_mat=np.zeros((self.batch_size,self._num_anchors))
         for k in range(self.batch_size):
             if self.main_thread:
-                #idx=np.append(np.where(idx_ov_bool[k])[0]+1,0) #ToDO main thread
-                idx = np.where(idx_ov_bool[k])[0]+1
+                idx=np.append(np.where(idx_ov_bool[k])[0]+1,0) #ToDO main thread
+                #idx = np.where(idx_ov_bool[k])[0]+1
             else:
                 idx = np.where(idx_ov_bool[k])[0]
             self.idx_ov.append(idx.tolist())
-            scores_out[k,idx] = scores[idx, k]
+            if not self.disturb_main:
+                scores_out[k,idx] = scores[idx, k]
+            if self.disturb_main:
+                scores_out[k, idx,:-1] = scores[idx, k]
+                scores_out[k, 0,-1] = 0.35*max(scores[0, k])
             self.ov_mat[k,idx]=1
+
             # bbox_out[k] = 0 #np.mean(bbox_pred[idx, k, :], axis=0)
 
 
@@ -123,9 +132,7 @@ class RCNNLayer(caffe.Layer):
             for i in range(self.batch_size):
                 # a=top[0].diff
                 #b=bottom[z+1].diff
-                #print(b)
-                if self.ov_mat[i,z]==1:
-                    bottom[z+1].diff[i] = top[0].diff[i,z].reshape(-1)/self.pow_coef
+                        bottom[z+1].diff[i] = top[0].diff[i,z].reshape(-1)
                 else:
                     bottom[z + 1].diff[i]=np.zeros(self.num_cls)
                 # zz=0

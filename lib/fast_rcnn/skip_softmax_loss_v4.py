@@ -38,7 +38,7 @@ class SoftmaxLossLayer(caffe.Layer):
         # DBG
         self.count = 0
         self.skip_count = 0
-
+        self.sqrt_norm=True
         top[0].reshape(1)
 
     def reshape(self, bottom, top):
@@ -89,6 +89,8 @@ class SoftmaxLossLayer(caffe.Layer):
             print('-- skip count -- ',self.skip_count/(100.0*self.batch_sz))
             self.skip_count=0
         top[0].data[...] = np.sum(loss) / bottom[0].num
+        if self.sqrt_norm:
+           self.coeff=np.sqrt(self.coeff)
         #top[1].data[...] = loss
 
     def backward(self, top, propagate_down, bottom):
