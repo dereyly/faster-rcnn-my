@@ -26,7 +26,7 @@ import numpy.random as npr
 from fast_rcnn.config import cfg
 from fast_rcnn.bbox_transform import bbox_transform
 from utils.cython_bbox import bbox_overlaps
-from generate_anchors import generate_anchors
+from lib.rpn.generate_anchors import generate_anchors
 DEBUG = False
 
 class RCNNLayer(caffe.Layer):
