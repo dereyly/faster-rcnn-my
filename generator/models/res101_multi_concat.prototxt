@@ -4240,21 +4240,6 @@ layer {
     normalize: true
   }
 }
-
-# layer {
-#   name: 'cls_lost_rpn'
-#   type: 'Python'
-#   bottom: 'rpn_cls_score_reshape'
-#   bottom: 'rpn_labels'
-#   top: 'cls_lost_rpn'
-#   python_param {
-#     module: 'fast_rcnn.skip_softmax_loss_v2'
-#     layer: 'SoftmaxLossLayer'
-   
-#   }
-#   loss_weight: 1
-# }
-
 layer {
   name: "rpn_loss_bbox"
   type: "SmoothL1Loss"
@@ -4452,67 +4437,9 @@ layer {
   bottom: "fc2"
   top: "fc2"
 } 
-layer {
-  name: "cls_score"
-  type: "InnerProduct"
-  bottom: "fc2"
-  top: "cls_score"
-  param {
-    lr_mult: 1
-    decay_mult: 1
-  }
-  param {
-    lr_mult: 2
-    decay_mult: 0
-  }
-  inner_product_param {
-    num_output: 21
-    weight_filler {
-      type: "msra"
-      std: 0.01
-    }
-    bias_filler {
-      type: "constant"
-      value: 0
-    }
-  }
-}
-layer {
-  name: "bbox_pred"
-  type: "InnerProduct"
-  bottom: "fc2"
-  top: "bbox_pred"
-  param {
-    lr_mult: 1
-    decay_mult: 1
-  }
-  param {
-    lr_mult: 2
-    decay_mult: 0
-  }
-  inner_product_param {
-    num_output: 84
-    weight_filler {
-      type: "msra"
-      std: 0.01
-    }
-    bias_filler {
-      type: "constant"
-      value: 0
-    }
-  }
-}
 
-layer {
-  name: "loss_bbox"
-  type: "SmoothL1Loss"
-  bottom: "bbox_pred"
-  bottom: "bbox_targets"
-  bottom: "bbox_inside_weights"
-  bottom: "bbox_outside_weights"
-  top: "loss_bbox"
-  loss_weight: 1
-}
+
+
 
 layer {
   name: "fc6_0"
@@ -4577,20 +4504,6 @@ layer {
   type: "ReLU"
   bottom: "fc7_0"
   top: "fc7_0"
-}
-
-layer {
-  name: "cls_score_0"
-  type: "InnerProduct"
-  bottom: "fc7_0"
-  top: "cls_score_0"
-  param { lr_mult: 1.0 }
-  param { lr_mult: 2.0 }
-  inner_product_param {
-    num_output: 21
-    weight_filler { type: "gaussian" std: 0.01 }
-    bias_filler { type: "constant" value: 0 }
-  }
 }
 
 layer {
@@ -4659,20 +4572,6 @@ layer {
 }
 
 layer {
-  name: "cls_score_1"
-  type: "InnerProduct"
-  bottom: "fc7_1"
-  top: "cls_score_1"
-  param { lr_mult: 1.0 }
-  param { lr_mult: 2.0 }
-  inner_product_param {
-    num_output: 21
-    weight_filler { type: "gaussian" std: 0.01 }
-    bias_filler { type: "constant" value: 0 }
-  }
-}
-
-layer {
   name: "fc6_2"
   type: "InnerProduct"
   bottom: "roi_pool"
@@ -4735,20 +4634,6 @@ layer {
   type: "ReLU"
   bottom: "fc7_2"
   top: "fc7_2"
-}
-
-layer {
-  name: "cls_score_2"
-  type: "InnerProduct"
-  bottom: "fc7_2"
-  top: "cls_score_2"
-  param { lr_mult: 1.0 }
-  param { lr_mult: 2.0 }
-  inner_product_param {
-    num_output: 21
-    weight_filler { type: "gaussian" std: 0.01 }
-    bias_filler { type: "constant" value: 0 }
-  }
 }
 
 layer {
@@ -4817,20 +4702,6 @@ layer {
 }
 
 layer {
-  name: "cls_score_3"
-  type: "InnerProduct"
-  bottom: "fc7_3"
-  top: "cls_score_3"
-  param { lr_mult: 1.0 }
-  param { lr_mult: 2.0 }
-  inner_product_param {
-    num_output: 21
-    weight_filler { type: "gaussian" std: 0.01 }
-    bias_filler { type: "constant" value: 0 }
-  }
-}
-
-layer {
   name: "fc6_4"
   type: "InnerProduct"
   bottom: "roi_pool"
@@ -4893,20 +4764,6 @@ layer {
   type: "ReLU"
   bottom: "fc7_4"
   top: "fc7_4"
-}
-
-layer {
-  name: "cls_score_4"
-  type: "InnerProduct"
-  bottom: "fc7_4"
-  top: "cls_score_4"
-  param { lr_mult: 1.0 }
-  param { lr_mult: 2.0 }
-  inner_product_param {
-    num_output: 21
-    weight_filler { type: "gaussian" std: 0.01 }
-    bias_filler { type: "constant" value: 0 }
-  }
 }
 
 layer {
@@ -4975,20 +4832,6 @@ layer {
 }
 
 layer {
-  name: "cls_score_5"
-  type: "InnerProduct"
-  bottom: "fc7_5"
-  top: "cls_score_5"
-  param { lr_mult: 1.0 }
-  param { lr_mult: 2.0 }
-  inner_product_param {
-    num_output: 21
-    weight_filler { type: "gaussian" std: 0.01 }
-    bias_filler { type: "constant" value: 0 }
-  }
-}
-
-layer {
   name: "fc6_6"
   type: "InnerProduct"
   bottom: "roi_pool"
@@ -5051,20 +4894,6 @@ layer {
   type: "ReLU"
   bottom: "fc7_6"
   top: "fc7_6"
-}
-
-layer {
-  name: "cls_score_6"
-  type: "InnerProduct"
-  bottom: "fc7_6"
-  top: "cls_score_6"
-  param { lr_mult: 1.0 }
-  param { lr_mult: 2.0 }
-  inner_product_param {
-    num_output: 21
-    weight_filler { type: "gaussian" std: 0.01 }
-    bias_filler { type: "constant" value: 0 }
-  }
 }
 
 layer {
@@ -5133,20 +4962,6 @@ layer {
 }
 
 layer {
-  name: "cls_score_7"
-  type: "InnerProduct"
-  bottom: "fc7_7"
-  top: "cls_score_7"
-  param { lr_mult: 1.0 }
-  param { lr_mult: 2.0 }
-  inner_product_param {
-    num_output: 21
-    weight_filler { type: "gaussian" std: 0.01 }
-    bias_filler { type: "constant" value: 0 }
-  }
-}
-
-layer {
   name: "fc6_8"
   type: "InnerProduct"
   bottom: "roi_pool"
@@ -5209,20 +5024,6 @@ layer {
   type: "ReLU"
   bottom: "fc7_8"
   top: "fc7_8"
-}
-
-layer {
-  name: "cls_score_8"
-  type: "InnerProduct"
-  bottom: "fc7_8"
-  top: "cls_score_8"
-  param { lr_mult: 1.0 }
-  param { lr_mult: 2.0 }
-  inner_product_param {
-    num_output: 21
-    weight_filler { type: "gaussian" std: 0.01 }
-    bias_filler { type: "constant" value: 0 }
-  }
 }
 
 layer {
@@ -5291,20 +5092,6 @@ layer {
 }
 
 layer {
-  name: "cls_score_9"
-  type: "InnerProduct"
-  bottom: "fc7_9"
-  top: "cls_score_9"
-  param { lr_mult: 1.0 }
-  param { lr_mult: 2.0 }
-  inner_product_param {
-    num_output: 21
-    weight_filler { type: "gaussian" std: 0.01 }
-    bias_filler { type: "constant" value: 0 }
-  }
-}
-
-layer {
   name: "fc6_10"
   type: "InnerProduct"
   bottom: "roi_pool"
@@ -5367,20 +5154,6 @@ layer {
   type: "ReLU"
   bottom: "fc7_10"
   top: "fc7_10"
-}
-
-layer {
-  name: "cls_score_10"
-  type: "InnerProduct"
-  bottom: "fc7_10"
-  top: "cls_score_10"
-  param { lr_mult: 1.0 }
-  param { lr_mult: 2.0 }
-  inner_product_param {
-    num_output: 21
-    weight_filler { type: "gaussian" std: 0.01 }
-    bias_filler { type: "constant" value: 0 }
-  }
 }
 
 layer {
@@ -5449,20 +5222,6 @@ layer {
 }
 
 layer {
-  name: "cls_score_11"
-  type: "InnerProduct"
-  bottom: "fc7_11"
-  top: "cls_score_11"
-  param { lr_mult: 1.0 }
-  param { lr_mult: 2.0 }
-  inner_product_param {
-    num_output: 21
-    weight_filler { type: "gaussian" std: 0.01 }
-    bias_filler { type: "constant" value: 0 }
-  }
-}
-
-layer {
   name: "fc6_12"
   type: "InnerProduct"
   bottom: "roi_pool"
@@ -5525,20 +5284,6 @@ layer {
   type: "ReLU"
   bottom: "fc7_12"
   top: "fc7_12"
-}
-
-layer {
-  name: "cls_score_12"
-  type: "InnerProduct"
-  bottom: "fc7_12"
-  top: "cls_score_12"
-  param { lr_mult: 1.0 }
-  param { lr_mult: 2.0 }
-  inner_product_param {
-    num_output: 21
-    weight_filler { type: "gaussian" std: 0.01 }
-    bias_filler { type: "constant" value: 0 }
-  }
 }
 
 layer {
@@ -5607,20 +5352,6 @@ layer {
 }
 
 layer {
-  name: "cls_score_13"
-  type: "InnerProduct"
-  bottom: "fc7_13"
-  top: "cls_score_13"
-  param { lr_mult: 1.0 }
-  param { lr_mult: 2.0 }
-  inner_product_param {
-    num_output: 21
-    weight_filler { type: "gaussian" std: 0.01 }
-    bias_filler { type: "constant" value: 0 }
-  }
-}
-
-layer {
   name: "fc6_14"
   type: "InnerProduct"
   bottom: "roi_pool"
@@ -5685,132 +5416,127 @@ layer {
   top: "fc7_14"
 }
 
-layer {
-  name: "cls_score_14"
-  type: "InnerProduct"
-  bottom: "fc7_14"
-  top: "cls_score_14"
-  param { lr_mult: 1.0 }
-  param { lr_mult: 2.0 }
-  inner_product_param {
-    num_output: 21
-    weight_filler { type: "gaussian" std: 0.01 }
-    bias_filler { type: "constant" value: 0 }
-  }
-}
-# layer {
-#   name: "cls_score/sqrt"
-#   type: "Power"
-#   bottom: "cls_score"
-#   top: "cls_score/sqrt"
-#   power_param {
-#     power: 0.5
-#     scale: 1.0
-#     shift: 0
-#   }
-# }
-
-# layer {
-#   name: "cls_score/relu"
-#   type: "ReLU"
-#   bottom: "cls_score"
-#   top: "cls_score/relu"
-# }
 
 layer {
   name: 'rcnn-ancors'
   type: 'Python'
   bottom: 'rois'
-  bottom: 'cls_score'
-  bottom: "cls_score_0"
-bottom: "cls_score_1"
-bottom: "cls_score_2"
-bottom: "cls_score_3"
-bottom: "cls_score_4"
-bottom: "cls_score_5"
-bottom: "cls_score_6"
-bottom: "cls_score_7"
-bottom: "cls_score_8"
-bottom: "cls_score_9"
-bottom: "cls_score_10"
-bottom: "cls_score_11"
-bottom: "cls_score_12"
-bottom: "cls_score_13"
-bottom: "cls_score_14"
+  bottom: "fc7_0"
+bottom: "fc7_1"
+bottom: "fc7_2"
+bottom: "fc7_3"
+bottom: "fc7_4"
+bottom: "fc7_5"
+bottom: "fc7_6"
+bottom: "fc7_7"
+bottom: "fc7_8"
+bottom: "fc7_9"
+bottom: "fc7_10"
+bottom: "fc7_11"
+bottom: "fc7_12"
+bottom: "fc7_13"
+bottom: "fc7_14"
 
-  top: 'scores_all'
+  top: 'concat_all'
   python_param {
-    module: 'rpn.rcnn_layer_multi_zero_top3'
+    module: 'rpn.rcnn_layer_multi_concat'
     layer: 'RCNNLayer'
-    param_str: "{'ratios': [0.5, 1, 2], 'scales': [2, 4, 8, 16, 32], 'main_thread':True, 'disturb_main':True}"
+    param_str: "{'ratios': [0.5, 1, 2], 'scales': [2, 4, 8, 16, 32]}"
   }
 }
 
 
+layer {
+  name: "concat_fin"
+  type: "Concat"
+  bottom: "concat_all"
+  bottom: "fc2"
+  top: "concat_fin"
+}
+
 
 layer {
-  name: "score_hidden"
-  type: "Convolution"
-  bottom: "scores_all"
-  top: "score_hidden"
-  convolution_param {
-    num_output: 30
-    kernel_size: 1
+  name: "cls_score"
+  type: "InnerProduct"
+  bottom: "concat_fin"
+  top: "cls_score"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  inner_product_param {
+    num_output: 21
     weight_filler {
       type: "msra"
       std: 0.01
     }
-    bias_term: false
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
   }
 }
 layer {
-  name: "cls_score_nonlin"
-  type: "Convolution"
-  bottom: "score_hidden"
-  top: "cls_score_nonlin"
-  convolution_param {
-    num_output: 1
-    kernel_size: 1
+  name: "bbox_pred"
+  type: "InnerProduct"
+  bottom: "concat_fin"
+  top: "bbox_pred"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  inner_product_param {
+    num_output: 84
     weight_filler {
       type: "msra"
       std: 0.01
     }
-    bias_term: false
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
   }
 }
-layer {
-    name: "cls_score-fl"
-    type: "Flatten"
-    bottom: "cls_score_nonlin"
-    top: "cls_score-fl"
-  }
-
-
 
 layer {
-  name: 'loss_threads'
-  type: 'Python'
-  bottom: 'cls_score-fl'
-  bottom: 'labels'
-  top: 'loss_threads'
-  python_param {
-    module: 'fast_rcnn.skip_softmax_loss_v2'
-    layer: 'SoftmaxLossLayer'
-   
-  }
+  name: "loss_bbox"
+  type: "SmoothL1Loss"
+  bottom: "bbox_pred"
+  bottom: "bbox_targets"
+  bottom: "bbox_inside_weights"
+  bottom: "bbox_outside_weights"
+  top: "loss_bbox"
   loss_weight: 1
 }
 
 layer {
-  name: 'loss_main_thr'
-  type: 'Python'
-  bottom: 'cls_score'
-  bottom: 'labels'
-  top: 'loss_main_thr'
-  python_param {
-    module: 'fast_rcnn.skip_softmax_loss'
-    layer: 'SoftmaxLossLayer'
-   
-  }
+  name: "loss_cls"
+  type: "SoftmaxWithLoss"
+  bottom: "cls_score"
+  bottom: "labels"
+  propagate_down: 1
+  propagate_down: 0
+  top: "loss_cls"
   loss_weight: 1
 }
+# layer {
+#   name: 'loss_threads'
+#   type: 'Python'
+#   bottom: 'cls_score'
+#   bottom: 'labels'
+#   top: 'loss_threads'
+#   python_param {
+#     module: 'fast_rcnn.skip_softmax_loss_v2'
+#     layer: 'SoftmaxLossLayer'
+   
+#   }
+#   loss_weight: 1
+# }

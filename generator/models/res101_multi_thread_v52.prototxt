@@ -5710,18 +5710,18 @@ layer {
 #   }
 # }
 
-# layer {
-#   name: "cls_score/relu"
-#   type: "ReLU"
-#   bottom: "cls_score"
-#   top: "cls_score/relu"
-# }
+layer {
+  name: "cls_score/relu"
+  type: "ReLU"
+  bottom: "cls_score"
+  top: "cls_score/relu"
+}
 
 layer {
   name: 'rcnn-ancors'
   type: 'Python'
   bottom: 'rois'
-  bottom: 'cls_score'
+  bottom: 'cls_score/relu'
   bottom: "cls_score_0"
 bottom: "cls_score_1"
 bottom: "cls_score_2"
@@ -5742,7 +5742,7 @@ bottom: "cls_score_14"
   python_param {
     module: 'rpn.rcnn_layer_multi_zero_top3'
     layer: 'RCNNLayer'
-    param_str: "{'ratios': [0.5, 1, 2], 'scales': [2, 4, 8, 16, 32], 'main_thread':True, 'disturb_main':True}"
+    param_str: "{'ratios': [0.5, 1, 2], 'scales': [2, 4, 8, 16, 32], 'main_thread':True, 'disturb_main':False}"
   }
 }
 

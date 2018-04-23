@@ -5609,6 +5609,12 @@ layer {
   }
 }
 
+# layer {
+#   name: "cls_score/relu"
+#   type: "ReLU"
+#   bottom: "cls_score"
+#   top: "cls_score/relu"
+# }
 
 layer {
   name: 'rcnn-ancors'
@@ -5633,9 +5639,9 @@ bottom: "cls_score_14"
 
   top: 'scores_all'
   python_param {
-    module: 'rpn.rcnn_layer_multi_zero'
+    module: 'rpn.rcnn_layer_multi_zero_top3'
     layer: 'RCNNLayer'
-    param_str: "{'ratios': [0.5, 1, 2], 'scales': [2, 4, 8, 16, 32], 'main_thread':True}"
+    param_str: "{'ratios': [0.5, 1, 2], 'scales': [2, 4, 8, 16, 32], 'main_thread':True, 'disturb_main': True}"
   }
 }
 
@@ -5653,10 +5659,7 @@ layer {
       type: "msra"
       std: 0.01
     }
-    bias_filler {
-      type: "constant"
-      value: 0
-    }
+     bias_term: false
   }
 }
 layer {
@@ -5671,10 +5674,7 @@ layer {
       type: "msra"
       std: 0.01
     }
-    bias_filler {
-      type: "constant"
-      value: 0
-    }
+    bias_term: false
   }
 }
 layer {
@@ -5687,7 +5687,7 @@ layer {
 layer {
   name: "cls_prob"
   type: "Softmax"
-  bottom: "cls_score"
+  bottom: "cls_score-fl"
   top: "cls_prob"
   
 }
