@@ -4464,7 +4464,7 @@ layer {
 
 layer {
   name: "fc7_0"
-  type: "InnerProduct"
+  type: "Convolution"
   bottom: "fc6_0"
   top: "fc7_0"
   convolution_param {
@@ -4485,7 +4485,7 @@ layer {
 
 layer {
   name: "fc8_0"
-  type: "InnerProduct"
+  type: "Convolution"
   bottom: "fc7_0"
   top: "fc8_0"
   convolution_param {
@@ -4507,7 +4507,7 @@ layer {
 layer {
   name: "pool_0"
   type: "Pooling"
-  bottom: "conv1"
+  bottom: "fc8_0"
   top: "pool_0"
   pooling_param {
     pool: AVE
@@ -4515,6 +4515,17 @@ layer {
     stride: 7
   }
 }
+
+
+
+
+layer {
+  name: "pool_0/flatten"
+  type: "Flatten"
+  bottom: "pool_0"
+  top: "pool_0/flatten"
+  }
+
 layer {
   name: "fc6_1"
   type: "Convolution"
@@ -4538,7 +4549,7 @@ layer {
 
 layer {
   name: "fc7_1"
-  type: "InnerProduct"
+  type: "Convolution"
   bottom: "fc6_1"
   top: "fc7_1"
   convolution_param {
@@ -4559,7 +4570,7 @@ layer {
 
 layer {
   name: "fc8_1"
-  type: "InnerProduct"
+  type: "Convolution"
   bottom: "fc7_1"
   top: "fc8_1"
   convolution_param {
@@ -4581,7 +4592,7 @@ layer {
 layer {
   name: "pool_1"
   type: "Pooling"
-  bottom: "conv1"
+  bottom: "fc8_1"
   top: "pool_1"
   pooling_param {
     pool: AVE
@@ -4589,6 +4600,17 @@ layer {
     stride: 7
   }
 }
+
+
+
+
+layer {
+  name: "pool_1/flatten"
+  type: "Flatten"
+  bottom: "pool_1"
+  top: "pool_1/flatten"
+  }
+
 layer {
   name: "fc6_2"
   type: "Convolution"
@@ -4612,7 +4634,7 @@ layer {
 
 layer {
   name: "fc7_2"
-  type: "InnerProduct"
+  type: "Convolution"
   bottom: "fc6_2"
   top: "fc7_2"
   convolution_param {
@@ -4633,7 +4655,7 @@ layer {
 
 layer {
   name: "fc8_2"
-  type: "InnerProduct"
+  type: "Convolution"
   bottom: "fc7_2"
   top: "fc8_2"
   convolution_param {
@@ -4655,7 +4677,7 @@ layer {
 layer {
   name: "pool_2"
   type: "Pooling"
-  bottom: "conv1"
+  bottom: "fc8_2"
   top: "pool_2"
   pooling_param {
     pool: AVE
@@ -4663,6 +4685,17 @@ layer {
     stride: 7
   }
 }
+
+
+
+
+layer {
+  name: "pool_2/flatten"
+  type: "Flatten"
+  bottom: "pool_2"
+  top: "pool_2/flatten"
+  }
+
 layer {
   name: "fc6_3"
   type: "Convolution"
@@ -4686,7 +4719,7 @@ layer {
 
 layer {
   name: "fc7_3"
-  type: "InnerProduct"
+  type: "Convolution"
   bottom: "fc6_3"
   top: "fc7_3"
   convolution_param {
@@ -4707,7 +4740,7 @@ layer {
 
 layer {
   name: "fc8_3"
-  type: "InnerProduct"
+  type: "Convolution"
   bottom: "fc7_3"
   top: "fc8_3"
   convolution_param {
@@ -4729,7 +4762,7 @@ layer {
 layer {
   name: "pool_3"
   type: "Pooling"
-  bottom: "conv1"
+  bottom: "fc8_3"
   top: "pool_3"
   pooling_param {
     pool: AVE
@@ -4737,6 +4770,17 @@ layer {
     stride: 7
   }
 }
+
+
+
+
+layer {
+  name: "pool_3/flatten"
+  type: "Flatten"
+  bottom: "pool_3"
+  top: "pool_3/flatten"
+  }
+
 layer {
   name: "fc6_4"
   type: "Convolution"
@@ -4760,7 +4804,7 @@ layer {
 
 layer {
   name: "fc7_4"
-  type: "InnerProduct"
+  type: "Convolution"
   bottom: "fc6_4"
   top: "fc7_4"
   convolution_param {
@@ -4781,7 +4825,7 @@ layer {
 
 layer {
   name: "fc8_4"
-  type: "InnerProduct"
+  type: "Convolution"
   bottom: "fc7_4"
   top: "fc8_4"
   convolution_param {
@@ -4803,7 +4847,7 @@ layer {
 layer {
   name: "pool_4"
   type: "Pooling"
-  bottom: "conv1"
+  bottom: "fc8_4"
   top: "pool_4"
   pooling_param {
     pool: AVE
@@ -4811,6 +4855,17 @@ layer {
     stride: 7
   }
 }
+
+
+
+
+layer {
+  name: "pool_4/flatten"
+  type: "Flatten"
+  bottom: "pool_4"
+  top: "pool_4/flatten"
+  }
+
 layer {
   name: "fc6_5"
   type: "Convolution"
@@ -4834,7 +4889,7 @@ layer {
 
 layer {
   name: "fc7_5"
-  type: "InnerProduct"
+  type: "Convolution"
   bottom: "fc6_5"
   top: "fc7_5"
   convolution_param {
@@ -4855,7 +4910,7 @@ layer {
 
 layer {
   name: "fc8_5"
-  type: "InnerProduct"
+  type: "Convolution"
   bottom: "fc7_5"
   top: "fc8_5"
   convolution_param {
@@ -4877,7 +4932,7 @@ layer {
 layer {
   name: "pool_5"
   type: "Pooling"
-  bottom: "conv1"
+  bottom: "fc8_5"
   top: "pool_5"
   pooling_param {
     pool: AVE
@@ -4885,6 +4940,17 @@ layer {
     stride: 7
   }
 }
+
+
+
+
+layer {
+  name: "pool_5/flatten"
+  type: "Flatten"
+  bottom: "pool_5"
+  top: "pool_5/flatten"
+  }
+
 layer {
   name: "fc6_6"
   type: "Convolution"
@@ -4908,7 +4974,7 @@ layer {
 
 layer {
   name: "fc7_6"
-  type: "InnerProduct"
+  type: "Convolution"
   bottom: "fc6_6"
   top: "fc7_6"
   convolution_param {
@@ -4929,7 +4995,7 @@ layer {
 
 layer {
   name: "fc8_6"
-  type: "InnerProduct"
+  type: "Convolution"
   bottom: "fc7_6"
   top: "fc8_6"
   convolution_param {
@@ -4951,7 +5017,7 @@ layer {
 layer {
   name: "pool_6"
   type: "Pooling"
-  bottom: "conv1"
+  bottom: "fc8_6"
   top: "pool_6"
   pooling_param {
     pool: AVE
@@ -4959,6 +5025,17 @@ layer {
     stride: 7
   }
 }
+
+
+
+
+layer {
+  name: "pool_6/flatten"
+  type: "Flatten"
+  bottom: "pool_6"
+  top: "pool_6/flatten"
+  }
+
 layer {
   name: "fc6_7"
   type: "Convolution"
@@ -4982,7 +5059,7 @@ layer {
 
 layer {
   name: "fc7_7"
-  type: "InnerProduct"
+  type: "Convolution"
   bottom: "fc6_7"
   top: "fc7_7"
   convolution_param {
@@ -5003,7 +5080,7 @@ layer {
 
 layer {
   name: "fc8_7"
-  type: "InnerProduct"
+  type: "Convolution"
   bottom: "fc7_7"
   top: "fc8_7"
   convolution_param {
@@ -5025,7 +5102,7 @@ layer {
 layer {
   name: "pool_7"
   type: "Pooling"
-  bottom: "conv1"
+  bottom: "fc8_7"
   top: "pool_7"
   pooling_param {
     pool: AVE
@@ -5033,6 +5110,17 @@ layer {
     stride: 7
   }
 }
+
+
+
+
+layer {
+  name: "pool_7/flatten"
+  type: "Flatten"
+  bottom: "pool_7"
+  top: "pool_7/flatten"
+  }
+
 layer {
   name: "fc6_8"
   type: "Convolution"
@@ -5056,7 +5144,7 @@ layer {
 
 layer {
   name: "fc7_8"
-  type: "InnerProduct"
+  type: "Convolution"
   bottom: "fc6_8"
   top: "fc7_8"
   convolution_param {
@@ -5077,7 +5165,7 @@ layer {
 
 layer {
   name: "fc8_8"
-  type: "InnerProduct"
+  type: "Convolution"
   bottom: "fc7_8"
   top: "fc8_8"
   convolution_param {
@@ -5099,7 +5187,7 @@ layer {
 layer {
   name: "pool_8"
   type: "Pooling"
-  bottom: "conv1"
+  bottom: "fc8_8"
   top: "pool_8"
   pooling_param {
     pool: AVE
@@ -5107,6 +5195,17 @@ layer {
     stride: 7
   }
 }
+
+
+
+
+layer {
+  name: "pool_8/flatten"
+  type: "Flatten"
+  bottom: "pool_8"
+  top: "pool_8/flatten"
+  }
+
 layer {
   name: "fc6_9"
   type: "Convolution"
@@ -5130,7 +5229,7 @@ layer {
 
 layer {
   name: "fc7_9"
-  type: "InnerProduct"
+  type: "Convolution"
   bottom: "fc6_9"
   top: "fc7_9"
   convolution_param {
@@ -5151,7 +5250,7 @@ layer {
 
 layer {
   name: "fc8_9"
-  type: "InnerProduct"
+  type: "Convolution"
   bottom: "fc7_9"
   top: "fc8_9"
   convolution_param {
@@ -5173,7 +5272,7 @@ layer {
 layer {
   name: "pool_9"
   type: "Pooling"
-  bottom: "conv1"
+  bottom: "fc8_9"
   top: "pool_9"
   pooling_param {
     pool: AVE
@@ -5181,6 +5280,17 @@ layer {
     stride: 7
   }
 }
+
+
+
+
+layer {
+  name: "pool_9/flatten"
+  type: "Flatten"
+  bottom: "pool_9"
+  top: "pool_9/flatten"
+  }
+
 layer {
   name: "fc6_10"
   type: "Convolution"
@@ -5204,7 +5314,7 @@ layer {
 
 layer {
   name: "fc7_10"
-  type: "InnerProduct"
+  type: "Convolution"
   bottom: "fc6_10"
   top: "fc7_10"
   convolution_param {
@@ -5225,7 +5335,7 @@ layer {
 
 layer {
   name: "fc8_10"
-  type: "InnerProduct"
+  type: "Convolution"
   bottom: "fc7_10"
   top: "fc8_10"
   convolution_param {
@@ -5247,7 +5357,7 @@ layer {
 layer {
   name: "pool_10"
   type: "Pooling"
-  bottom: "conv1"
+  bottom: "fc8_10"
   top: "pool_10"
   pooling_param {
     pool: AVE
@@ -5255,6 +5365,17 @@ layer {
     stride: 7
   }
 }
+
+
+
+
+layer {
+  name: "pool_10/flatten"
+  type: "Flatten"
+  bottom: "pool_10"
+  top: "pool_10/flatten"
+  }
+
 layer {
   name: "fc6_11"
   type: "Convolution"
@@ -5278,7 +5399,7 @@ layer {
 
 layer {
   name: "fc7_11"
-  type: "InnerProduct"
+  type: "Convolution"
   bottom: "fc6_11"
   top: "fc7_11"
   convolution_param {
@@ -5299,7 +5420,7 @@ layer {
 
 layer {
   name: "fc8_11"
-  type: "InnerProduct"
+  type: "Convolution"
   bottom: "fc7_11"
   top: "fc8_11"
   convolution_param {
@@ -5321,7 +5442,7 @@ layer {
 layer {
   name: "pool_11"
   type: "Pooling"
-  bottom: "conv1"
+  bottom: "fc8_11"
   top: "pool_11"
   pooling_param {
     pool: AVE
@@ -5329,6 +5450,17 @@ layer {
     stride: 7
   }
 }
+
+
+
+
+layer {
+  name: "pool_11/flatten"
+  type: "Flatten"
+  bottom: "pool_11"
+  top: "pool_11/flatten"
+  }
+
 layer {
   name: "fc6_12"
   type: "Convolution"
@@ -5352,7 +5484,7 @@ layer {
 
 layer {
   name: "fc7_12"
-  type: "InnerProduct"
+  type: "Convolution"
   bottom: "fc6_12"
   top: "fc7_12"
   convolution_param {
@@ -5373,7 +5505,7 @@ layer {
 
 layer {
   name: "fc8_12"
-  type: "InnerProduct"
+  type: "Convolution"
   bottom: "fc7_12"
   top: "fc8_12"
   convolution_param {
@@ -5395,7 +5527,7 @@ layer {
 layer {
   name: "pool_12"
   type: "Pooling"
-  bottom: "conv1"
+  bottom: "fc8_12"
   top: "pool_12"
   pooling_param {
     pool: AVE
@@ -5403,6 +5535,17 @@ layer {
     stride: 7
   }
 }
+
+
+
+
+layer {
+  name: "pool_12/flatten"
+  type: "Flatten"
+  bottom: "pool_12"
+  top: "pool_12/flatten"
+  }
+
 layer {
   name: "fc6_13"
   type: "Convolution"
@@ -5426,7 +5569,7 @@ layer {
 
 layer {
   name: "fc7_13"
-  type: "InnerProduct"
+  type: "Convolution"
   bottom: "fc6_13"
   top: "fc7_13"
   convolution_param {
@@ -5447,7 +5590,7 @@ layer {
 
 layer {
   name: "fc8_13"
-  type: "InnerProduct"
+  type: "Convolution"
   bottom: "fc7_13"
   top: "fc8_13"
   convolution_param {
@@ -5469,7 +5612,7 @@ layer {
 layer {
   name: "pool_13"
   type: "Pooling"
-  bottom: "conv1"
+  bottom: "fc8_13"
   top: "pool_13"
   pooling_param {
     pool: AVE
@@ -5477,6 +5620,17 @@ layer {
     stride: 7
   }
 }
+
+
+
+
+layer {
+  name: "pool_13/flatten"
+  type: "Flatten"
+  bottom: "pool_13"
+  top: "pool_13/flatten"
+  }
+
 layer {
   name: "fc6_14"
   type: "Convolution"
@@ -5500,7 +5654,7 @@ layer {
 
 layer {
   name: "fc7_14"
-  type: "InnerProduct"
+  type: "Convolution"
   bottom: "fc6_14"
   top: "fc7_14"
   convolution_param {
@@ -5521,7 +5675,7 @@ layer {
 
 layer {
   name: "fc8_14"
-  type: "InnerProduct"
+  type: "Convolution"
   bottom: "fc7_14"
   top: "fc8_14"
   convolution_param {
@@ -5543,7 +5697,7 @@ layer {
 layer {
   name: "pool_14"
   type: "Pooling"
-  bottom: "conv1"
+  bottom: "fc8_14"
   top: "pool_14"
   pooling_param {
     pool: AVE
@@ -5552,25 +5706,36 @@ layer {
   }
 }
 
+
+
+
+layer {
+  name: "pool_14/flatten"
+  type: "Flatten"
+  bottom: "pool_14"
+  top: "pool_14/flatten"
+  }
+
+
 layer {
   name: 'rcnn-ancors'
   type: 'Python'
   bottom: 'rois'
-  bottom: "pool_0"
-bottom: "pool_1"
-bottom: "pool_2"
-bottom: "pool_3"
-bottom: "pool_4"
-bottom: "pool_5"
-bottom: "pool_6"
-bottom: "pool_7"
-bottom: "pool_8"
-bottom: "pool_9"
-bottom: "pool_10"
-bottom: "pool_11"
-bottom: "pool_12"
-bottom: "pool_13"
-bottom: "pool_14"
+  bottom: "pool_0/flatten"
+bottom: "pool_1/flatten"
+bottom: "pool_2/flatten"
+bottom: "pool_3/flatten"
+bottom: "pool_4/flatten"
+bottom: "pool_5/flatten"
+bottom: "pool_6/flatten"
+bottom: "pool_7/flatten"
+bottom: "pool_8/flatten"
+bottom: "pool_9/flatten"
+bottom: "pool_10/flatten"
+bottom: "pool_11/flatten"
+bottom: "pool_12/flatten"
+bottom: "pool_13/flatten"
+bottom: "pool_14/flatten"
 
   top: 'concat_all'
   python_param {
@@ -5652,26 +5817,26 @@ layer {
   loss_weight: 1
 }
 
-# layer {
-#   name: "loss_cls"
-#   type: "SoftmaxWithLoss"
-#   bottom: "cls_score"
-#   bottom: "labels"
-#   propagate_down: 1
-#   propagate_down: 0
-#   top: "loss_cls"
-#   loss_weight: 1
-# }
 layer {
-  name: 'loss_threads'
-  type: 'Python'
-  bottom: 'cls_score'
-  bottom: 'labels'
-  top: 'loss_threads'
-  python_param {
-    module: 'fast_rcnn.skip_softmax_loss_v2'
-    layer: 'SoftmaxLossLayer'
-   
-  }
+  name: "loss_cls"
+  type: "SoftmaxWithLoss"
+  bottom: "cls_score"
+  bottom: "labels"
+  propagate_down: 1
+  propagate_down: 0
+  top: "loss_cls"
   loss_weight: 1
 }
+# layer {
+#   name: 'loss_threads'
+#   type: 'Python'
+#   bottom: 'cls_score'
+#   bottom: 'labels'
+#   top: 'loss_threads'
+#   python_param {
+#     module: 'fast_rcnn.skip_softmax_loss_v2'
+#     layer: 'SoftmaxLossLayer'
+   
+#   }
+#   loss_weight: 1
+# }

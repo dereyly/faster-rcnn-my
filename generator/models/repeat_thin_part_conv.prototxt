@@ -1,0 +1,85 @@
+layer {
+  name: "fc6_XXX"
+  type: "Convolution"
+  bottom: "roi_pool"
+  top: "fc6_XXX"
+  convolution_param {
+    bias_term: false
+    num_output: 64
+    pad: 1
+    kernel_size: 3
+    stride: 1
+  }
+}
+layer {
+  name: "fc6_XXX/relu"
+  type: "ReLU"
+  bottom: "fc6_XXX"
+  top: "fc6_XXX"
+}
+
+
+layer {
+  name: "fc7_XXX"
+  type: "Convolution"
+  bottom: "fc6_XXX"
+  top: "fc7_XXX"
+  convolution_param {
+    bias_term: false
+    num_output: 64
+    pad: 1
+    kernel_size: 3
+    stride: 1
+  }
+}
+
+layer {
+  name: "fc7_XXX/relu"
+  type: "ReLU"
+  bottom: "fc7_XXX"
+  top: "fc7_XXX"
+}
+
+layer {
+  name: "fc8_XXX"
+  type: "Convolution"
+  bottom: "fc7_XXX"
+  top: "fc8_XXX"
+  convolution_param {
+    bias_term: false
+    num_output: 128
+    pad: 0
+    kernel_size: 1
+    stride: 1
+  }
+}
+
+layer {
+  name: "fc8_XXX/relu"
+  type: "ReLU"
+  bottom: "fc8_XXX"
+  top: "fc8_XXX"
+}
+
+layer {
+  name: "pool_XXX"
+  type: "Pooling"
+  bottom: "fc8_XXX"
+  top: "pool_XXX"
+  pooling_param {
+    pool: AVE
+    kernel_size: 7
+    stride: 7
+  }
+}
+
+
+
+
+layer {
+  name: "pool_XXX/flatten"
+  type: "Flatten"
+  bottom: "pool_XXX"
+  top: "pool_XXX/flatten"
+  }
+
