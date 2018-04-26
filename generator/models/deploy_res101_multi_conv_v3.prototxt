@@ -1,15 +1,15 @@
-name: "faster_voc_resnet101-v2"
-layer {
-  name: 'input-data'
-  type: 'Python'
-  top: 'data'
-  top: 'im_info'
-  top: 'gt_boxes'
-  python_param {
-    module: 'roi_data_layer.layer'
-    layer: 'RoIDataLayer'
-    param_str: "'num_classes': 21"
-  }
+input: "data"
+input_shape {
+  dim: 1
+  dim: 3
+  dim: 600
+  dim: 600
+}
+
+input: "im_info"
+input_shape {
+  dim: 1
+  dim: 3
 }
 
 ################ resnet101-v2 ################
@@ -4208,54 +4208,12 @@ layer {
     }
   }
 }
-layer {
-  name: 'rpn-data'
-  type: 'Python'
-  bottom: 'rpn_cls_score'
-  bottom: 'gt_boxes'
-  bottom: 'im_info'
-  bottom: 'data'
-  top: 'rpn_labels'
-  top: 'rpn_bbox_targets'
-  top: 'rpn_bbox_inside_weights'
-  top: 'rpn_bbox_outside_weights'
-  include { phase: TRAIN }
-  python_param {
-    module: 'rpn.anchor_target_layer'
-    layer: 'AnchorTargetLayer'
-    param_str: "{'feat_stride': 16, 'ratios': [0.5,1,2], 'scales': [2, 4, 8, 16, 32, 64]}"
-  }
-}
-layer {
-  name: "rpn_loss_cls"
-  type: "SoftmaxWithLoss"
-  bottom: "rpn_cls_score_reshape"
-  bottom: "rpn_labels"
-  propagate_down: 1
-  propagate_down: 0
-  top: "rpn_cls_loss"
-  loss_weight: 1
-  loss_param {
-    ignore_label: -1
-    normalize: true
-  }
-}
-layer {
-  name: "rpn_loss_bbox"
-  type: "SmoothL1Loss"
-  bottom: "rpn_bbox_pred"
-  bottom: "rpn_bbox_targets"
-  bottom: 'rpn_bbox_inside_weights'
-  bottom: 'rpn_bbox_outside_weights'
-  top: "rpn_loss_bbox"
-  loss_weight: 1
-  smooth_l1_loss_param {
-    sigma: 3.0
-  }
-}
 
 
-#============== ROI Proposal ===============
+  
+################################################################################
+## Proposal
+################################################################################
 layer {
   name: "rpn_cls_prob"
   type: "Softmax"
@@ -4267,13 +4225,25 @@ layer {
   type: 'Reshape'
   bottom: 'rpn_cls_prob'
   top: 'rpn_cls_prob_reshape'
-  reshape_param {
-    shape {
-      dim: 0
-      dim: 36
-      dim: -1
-      dim: 0
-    }
+  reshape_param { shape { dim: 0 dim: 36 dim: -1 dim: 0 } }
+}
+layer {
+  name: 'proposal'
+  type: 'Python'
+  bottom: 'rpn_cls_prob_reshape'
+  bottom: 'rpn_bbox_pred'
+  bottom: 'im_info'
+  bottom: 'gt_boxes'
+  top: 'rois'
+  top: 'labels'
+  top: 'bbox_targets'
+  top: 'bbox_inside_weights'
+  top: 'bbox_outside_weights'
+  include { phase: TRAIN }
+  python_param {
+    module: 'rpn.proposal_layer'
+    layer: 'ProposalLayer2'
+    param_str: "{'feat_stride': 16, 'ratios': [0.5,1,2], 'scales': [2, 4, 8, 16, 32, 64]}"
   }
 }
 layer {
@@ -4282,51 +4252,17 @@ layer {
   bottom: 'rpn_cls_prob_reshape'
   bottom: 'rpn_bbox_pred'
   bottom: 'im_info'
-  top: 'rpn_rois'
-  top: 'rpn_scores'
-  include { phase: TRAIN }
+  top: 'rois'
+  top: 'scores'
+  include { phase: TEST }
   python_param {
     module: 'rpn.proposal_layer'
     layer: 'ProposalLayer'
     param_str: "{'feat_stride': 16, 'ratios': [0.5,1,2], 'scales': [2, 4, 8, 16, 32, 64]}"
   }
 }
-layer {
-  name: 'mute_rpn_scores'
-  bottom: 'rpn_scores'
-  type: 'Silence'
-  include { phase: TRAIN }
-}
-layer {
-  name: 'roi-data'
-  type: 'Python'
-  bottom: 'rpn_rois'
-  bottom: 'gt_boxes'
-  top: 'rois'
-  top: 'labels'
-  top: 'bbox_targets'
-  top: 'bbox_inside_weights'
-  top: 'bbox_outside_weights'
-  include { phase: TRAIN }  
-  python_param {
-    module: 'rpn.proposal_target_layer'
-    layer: 'ProposalTargetLayer'
-    param_str: "'num_classes': 21"
-  }
-}
-# layer {
-#   name: 'rcnn-ancors'
-#   type: 'Python'
-#   bottom: 'rois'
-#   #bottom: 'gt_boxes'
-#   bottom: 'labels'
-#   top: 'labels_rcnn'
-#   python_param {
-#     module: 'rpn.rcnn_target_layer'
-#     layer: 'RCNNTargetLayer'
-#     param_str: "{'ratios': [0.5, 1, 2], 'scales': [2, 4, 8, 16, 32, 64]}"
-#   }
-# }
+
+
 #============ new conv layer ===============
 layer {
   bottom: "res31_scale"
@@ -4437,81 +4373,22 @@ layer {
   bottom: "fc2"
   top: "fc2"
 } 
-layer {
-  name: "cls_score"
-  type: "InnerProduct"
-  bottom: "fc2"
-  top: "cls_score"
-  param {
-    lr_mult: 1
-    decay_mult: 1
-  }
-  param {
-    lr_mult: 2
-    decay_mult: 0
-  }
-  inner_product_param {
-    num_output: 21
-    weight_filler {
-      type: "msra"
-      std: 0.01
-    }
-    bias_filler {
-      type: "constant"
-      value: 0
-    }
-  }
-}
-layer {
-  name: "bbox_pred"
-  type: "InnerProduct"
-  bottom: "fc2"
-  top: "bbox_pred"
-  param {
-    lr_mult: 1
-    decay_mult: 1
-  }
-  param {
-    lr_mult: 2
-    decay_mult: 0
-  }
-  inner_product_param {
-    num_output: 84
-    weight_filler {
-      type: "msra"
-      std: 0.01
-    }
-    bias_filler {
-      type: "constant"
-      value: 0
-    }
-  }
-}
 
-layer {
-  name: "loss_bbox"
-  type: "SmoothL1Loss"
-  bottom: "bbox_pred"
-  bottom: "bbox_targets"
-  bottom: "bbox_inside_weights"
-  bottom: "bbox_outside_weights"
-  top: "loss_bbox"
-  loss_weight: 1
-}
+
+
 
 layer {
   name: "fc6_0"
   type: "Convolution"
   bottom: "roi_pool"
   top: "fc6_0"
-  param { lr_mult: 1 decay_mult: 1}
-  param { lr_mult: 2 decay_mult: 0}
   convolution_param {
+    bias_term: false
     num_output: 64
     pad: 1
     kernel_size: 3
     stride: 1
-    weight_filler { type: "gaussian" std: 0.1 }
+    weight_filler { type: "msra" std: 0.01 }
     bias_filler { type: "constant" value: 0 }
   }
 }
@@ -4528,14 +4405,13 @@ layer {
   type: "Convolution"
   bottom: "fc6_0"
   top: "fc7_0"
-  param { lr_mult: 1 decay_mult: 1}
-  param { lr_mult: 2 decay_mult: 0}
   convolution_param {
+    bias_term: false
     num_output: 64
     pad: 1
     kernel_size: 3
     stride: 1
-    weight_filler { type: "gaussian" std: 0.1 }
+    weight_filler { type: "msra" std: 0.01 }
     bias_filler { type: "constant" value: 0 }
   }
 }
@@ -4552,14 +4428,13 @@ layer {
   type: "Convolution"
   bottom: "fc7_0"
   top: "fc8_0"
-  param { lr_mult: 1 decay_mult: 1}
-  param { lr_mult: 2 decay_mult: 0}
   convolution_param {
+    bias_term: false
     num_output: 128
     pad: 0
     kernel_size: 1
     stride: 1
-    weight_filler { type: "gaussian" std: 0.1 }
+    weight_filler { type: "msra" std: 0.01 }
     bias_filler { type: "constant" value: 0 }
   }
 }
@@ -4585,32 +4460,26 @@ layer {
 
 
 
+
 layer {
-  name: "cls_score_0"
-  type: "InnerProduct"
+  name: "pool_0/flatten"
+  type: "Flatten"
   bottom: "pool_0"
-  top: "cls_score_0"
-  param { lr_mult: 1.0 }
-  param { lr_mult: 2.0 }
-  inner_product_param {
-    num_output: 21
-    weight_filler { type: "gaussian" std: 0.01 }
-    bias_filler { type: "constant" value: 0 }
+  top: "pool_0/flatten"
   }
-}
+
 layer {
   name: "fc6_1"
   type: "Convolution"
   bottom: "roi_pool"
   top: "fc6_1"
-  param { lr_mult: 1 decay_mult: 1}
-  param { lr_mult: 2 decay_mult: 0}
   convolution_param {
+    bias_term: false
     num_output: 64
     pad: 1
     kernel_size: 3
     stride: 1
-    weight_filler { type: "gaussian" std: 0.1 }
+    weight_filler { type: "msra" std: 0.01 }
     bias_filler { type: "constant" value: 0 }
   }
 }
@@ -4627,14 +4496,13 @@ layer {
   type: "Convolution"
   bottom: "fc6_1"
   top: "fc7_1"
-  param { lr_mult: 1 decay_mult: 1}
-  param { lr_mult: 2 decay_mult: 0}
   convolution_param {
+    bias_term: false
     num_output: 64
     pad: 1
     kernel_size: 3
     stride: 1
-    weight_filler { type: "gaussian" std: 0.1 }
+    weight_filler { type: "msra" std: 0.01 }
     bias_filler { type: "constant" value: 0 }
   }
 }
@@ -4651,14 +4519,13 @@ layer {
   type: "Convolution"
   bottom: "fc7_1"
   top: "fc8_1"
-  param { lr_mult: 1 decay_mult: 1}
-  param { lr_mult: 2 decay_mult: 0}
   convolution_param {
+    bias_term: false
     num_output: 128
     pad: 0
     kernel_size: 1
     stride: 1
-    weight_filler { type: "gaussian" std: 0.1 }
+    weight_filler { type: "msra" std: 0.01 }
     bias_filler { type: "constant" value: 0 }
   }
 }
@@ -4684,32 +4551,26 @@ layer {
 
 
 
+
 layer {
-  name: "cls_score_1"
-  type: "InnerProduct"
+  name: "pool_1/flatten"
+  type: "Flatten"
   bottom: "pool_1"
-  top: "cls_score_1"
-  param { lr_mult: 1.0 }
-  param { lr_mult: 2.0 }
-  inner_product_param {
-    num_output: 21
-    weight_filler { type: "gaussian" std: 0.01 }
-    bias_filler { type: "constant" value: 0 }
+  top: "pool_1/flatten"
   }
-}
+
 layer {
   name: "fc6_2"
   type: "Convolution"
   bottom: "roi_pool"
   top: "fc6_2"
-  param { lr_mult: 1 decay_mult: 1}
-  param { lr_mult: 2 decay_mult: 0}
   convolution_param {
+    bias_term: false
     num_output: 64
     pad: 1
     kernel_size: 3
     stride: 1
-    weight_filler { type: "gaussian" std: 0.1 }
+    weight_filler { type: "msra" std: 0.01 }
     bias_filler { type: "constant" value: 0 }
   }
 }
@@ -4726,14 +4587,13 @@ layer {
   type: "Convolution"
   bottom: "fc6_2"
   top: "fc7_2"
-  param { lr_mult: 1 decay_mult: 1}
-  param { lr_mult: 2 decay_mult: 0}
   convolution_param {
+    bias_term: false
     num_output: 64
     pad: 1
     kernel_size: 3
     stride: 1
-    weight_filler { type: "gaussian" std: 0.1 }
+    weight_filler { type: "msra" std: 0.01 }
     bias_filler { type: "constant" value: 0 }
   }
 }
@@ -4750,14 +4610,13 @@ layer {
   type: "Convolution"
   bottom: "fc7_2"
   top: "fc8_2"
-  param { lr_mult: 1 decay_mult: 1}
-  param { lr_mult: 2 decay_mult: 0}
   convolution_param {
+    bias_term: false
     num_output: 128
     pad: 0
     kernel_size: 1
     stride: 1
-    weight_filler { type: "gaussian" std: 0.1 }
+    weight_filler { type: "msra" std: 0.01 }
     bias_filler { type: "constant" value: 0 }
   }
 }
@@ -4783,32 +4642,26 @@ layer {
 
 
 
+
 layer {
-  name: "cls_score_2"
-  type: "InnerProduct"
+  name: "pool_2/flatten"
+  type: "Flatten"
   bottom: "pool_2"
-  top: "cls_score_2"
-  param { lr_mult: 1.0 }
-  param { lr_mult: 2.0 }
-  inner_product_param {
-    num_output: 21
-    weight_filler { type: "gaussian" std: 0.01 }
-    bias_filler { type: "constant" value: 0 }
+  top: "pool_2/flatten"
   }
-}
+
 layer {
   name: "fc6_3"
   type: "Convolution"
   bottom: "roi_pool"
   top: "fc6_3"
-  param { lr_mult: 1 decay_mult: 1}
-  param { lr_mult: 2 decay_mult: 0}
   convolution_param {
+    bias_term: false
     num_output: 64
     pad: 1
     kernel_size: 3
     stride: 1
-    weight_filler { type: "gaussian" std: 0.1 }
+    weight_filler { type: "msra" std: 0.01 }
     bias_filler { type: "constant" value: 0 }
   }
 }
@@ -4825,14 +4678,13 @@ layer {
   type: "Convolution"
   bottom: "fc6_3"
   top: "fc7_3"
-  param { lr_mult: 1 decay_mult: 1}
-  param { lr_mult: 2 decay_mult: 0}
   convolution_param {
+    bias_term: false
     num_output: 64
     pad: 1
     kernel_size: 3
     stride: 1
-    weight_filler { type: "gaussian" std: 0.1 }
+    weight_filler { type: "msra" std: 0.01 }
     bias_filler { type: "constant" value: 0 }
   }
 }
@@ -4849,14 +4701,13 @@ layer {
   type: "Convolution"
   bottom: "fc7_3"
   top: "fc8_3"
-  param { lr_mult: 1 decay_mult: 1}
-  param { lr_mult: 2 decay_mult: 0}
   convolution_param {
+    bias_term: false
     num_output: 128
     pad: 0
     kernel_size: 1
     stride: 1
-    weight_filler { type: "gaussian" std: 0.1 }
+    weight_filler { type: "msra" std: 0.01 }
     bias_filler { type: "constant" value: 0 }
   }
 }
@@ -4882,32 +4733,26 @@ layer {
 
 
 
+
 layer {
-  name: "cls_score_3"
-  type: "InnerProduct"
+  name: "pool_3/flatten"
+  type: "Flatten"
   bottom: "pool_3"
-  top: "cls_score_3"
-  param { lr_mult: 1.0 }
-  param { lr_mult: 2.0 }
-  inner_product_param {
-    num_output: 21
-    weight_filler { type: "gaussian" std: 0.01 }
-    bias_filler { type: "constant" value: 0 }
+  top: "pool_3/flatten"
   }
-}
+
 layer {
   name: "fc6_4"
   type: "Convolution"
   bottom: "roi_pool"
   top: "fc6_4"
-  param { lr_mult: 1 decay_mult: 1}
-  param { lr_mult: 2 decay_mult: 0}
   convolution_param {
+    bias_term: false
     num_output: 64
     pad: 1
     kernel_size: 3
     stride: 1
-    weight_filler { type: "gaussian" std: 0.1 }
+    weight_filler { type: "msra" std: 0.01 }
     bias_filler { type: "constant" value: 0 }
   }
 }
@@ -4924,14 +4769,13 @@ layer {
   type: "Convolution"
   bottom: "fc6_4"
   top: "fc7_4"
-  param { lr_mult: 1 decay_mult: 1}
-  param { lr_mult: 2 decay_mult: 0}
   convolution_param {
+    bias_term: false
     num_output: 64
     pad: 1
     kernel_size: 3
     stride: 1
-    weight_filler { type: "gaussian" std: 0.1 }
+    weight_filler { type: "msra" std: 0.01 }
     bias_filler { type: "constant" value: 0 }
   }
 }
@@ -4948,14 +4792,13 @@ layer {
   type: "Convolution"
   bottom: "fc7_4"
   top: "fc8_4"
-  param { lr_mult: 1 decay_mult: 1}
-  param { lr_mult: 2 decay_mult: 0}
   convolution_param {
+    bias_term: false
     num_output: 128
     pad: 0
     kernel_size: 1
     stride: 1
-    weight_filler { type: "gaussian" std: 0.1 }
+    weight_filler { type: "msra" std: 0.01 }
     bias_filler { type: "constant" value: 0 }
   }
 }
@@ -4981,32 +4824,26 @@ layer {
 
 
 
+
 layer {
-  name: "cls_score_4"
-  type: "InnerProduct"
+  name: "pool_4/flatten"
+  type: "Flatten"
   bottom: "pool_4"
-  top: "cls_score_4"
-  param { lr_mult: 1.0 }
-  param { lr_mult: 2.0 }
-  inner_product_param {
-    num_output: 21
-    weight_filler { type: "gaussian" std: 0.01 }
-    bias_filler { type: "constant" value: 0 }
+  top: "pool_4/flatten"
   }
-}
+
 layer {
   name: "fc6_5"
   type: "Convolution"
   bottom: "roi_pool"
   top: "fc6_5"
-  param { lr_mult: 1 decay_mult: 1}
-  param { lr_mult: 2 decay_mult: 0}
   convolution_param {
+    bias_term: false
     num_output: 64
     pad: 1
     kernel_size: 3
     stride: 1
-    weight_filler { type: "gaussian" std: 0.1 }
+    weight_filler { type: "msra" std: 0.01 }
     bias_filler { type: "constant" value: 0 }
   }
 }
@@ -5023,14 +4860,13 @@ layer {
   type: "Convolution"
   bottom: "fc6_5"
   top: "fc7_5"
-  param { lr_mult: 1 decay_mult: 1}
-  param { lr_mult: 2 decay_mult: 0}
   convolution_param {
+    bias_term: false
     num_output: 64
     pad: 1
     kernel_size: 3
     stride: 1
-    weight_filler { type: "gaussian" std: 0.1 }
+    weight_filler { type: "msra" std: 0.01 }
     bias_filler { type: "constant" value: 0 }
   }
 }
@@ -5047,14 +4883,13 @@ layer {
   type: "Convolution"
   bottom: "fc7_5"
   top: "fc8_5"
-  param { lr_mult: 1 decay_mult: 1}
-  param { lr_mult: 2 decay_mult: 0}
   convolution_param {
+    bias_term: false
     num_output: 128
     pad: 0
     kernel_size: 1
     stride: 1
-    weight_filler { type: "gaussian" std: 0.1 }
+    weight_filler { type: "msra" std: 0.01 }
     bias_filler { type: "constant" value: 0 }
   }
 }
@@ -5080,32 +4915,26 @@ layer {
 
 
 
+
 layer {
-  name: "cls_score_5"
-  type: "InnerProduct"
+  name: "pool_5/flatten"
+  type: "Flatten"
   bottom: "pool_5"
-  top: "cls_score_5"
-  param { lr_mult: 1.0 }
-  param { lr_mult: 2.0 }
-  inner_product_param {
-    num_output: 21
-    weight_filler { type: "gaussian" std: 0.01 }
-    bias_filler { type: "constant" value: 0 }
+  top: "pool_5/flatten"
   }
-}
+
 layer {
   name: "fc6_6"
   type: "Convolution"
   bottom: "roi_pool"
   top: "fc6_6"
-  param { lr_mult: 1 decay_mult: 1}
-  param { lr_mult: 2 decay_mult: 0}
   convolution_param {
+    bias_term: false
     num_output: 64
     pad: 1
     kernel_size: 3
     stride: 1
-    weight_filler { type: "gaussian" std: 0.1 }
+    weight_filler { type: "msra" std: 0.01 }
     bias_filler { type: "constant" value: 0 }
   }
 }
@@ -5122,14 +4951,13 @@ layer {
   type: "Convolution"
   bottom: "fc6_6"
   top: "fc7_6"
-  param { lr_mult: 1 decay_mult: 1}
-  param { lr_mult: 2 decay_mult: 0}
   convolution_param {
+    bias_term: false
     num_output: 64
     pad: 1
     kernel_size: 3
     stride: 1
-    weight_filler { type: "gaussian" std: 0.1 }
+    weight_filler { type: "msra" std: 0.01 }
     bias_filler { type: "constant" value: 0 }
   }
 }
@@ -5146,14 +4974,13 @@ layer {
   type: "Convolution"
   bottom: "fc7_6"
   top: "fc8_6"
-  param { lr_mult: 1 decay_mult: 1}
-  param { lr_mult: 2 decay_mult: 0}
   convolution_param {
+    bias_term: false
     num_output: 128
     pad: 0
     kernel_size: 1
     stride: 1
-    weight_filler { type: "gaussian" std: 0.1 }
+    weight_filler { type: "msra" std: 0.01 }
     bias_filler { type: "constant" value: 0 }
   }
 }
@@ -5179,32 +5006,26 @@ layer {
 
 
 
+
 layer {
-  name: "cls_score_6"
-  type: "InnerProduct"
+  name: "pool_6/flatten"
+  type: "Flatten"
   bottom: "pool_6"
-  top: "cls_score_6"
-  param { lr_mult: 1.0 }
-  param { lr_mult: 2.0 }
-  inner_product_param {
-    num_output: 21
-    weight_filler { type: "gaussian" std: 0.01 }
-    bias_filler { type: "constant" value: 0 }
+  top: "pool_6/flatten"
   }
-}
+
 layer {
   name: "fc6_7"
   type: "Convolution"
   bottom: "roi_pool"
   top: "fc6_7"
-  param { lr_mult: 1 decay_mult: 1}
-  param { lr_mult: 2 decay_mult: 0}
   convolution_param {
+    bias_term: false
     num_output: 64
     pad: 1
     kernel_size: 3
     stride: 1
-    weight_filler { type: "gaussian" std: 0.1 }
+    weight_filler { type: "msra" std: 0.01 }
     bias_filler { type: "constant" value: 0 }
   }
 }
@@ -5221,14 +5042,13 @@ layer {
   type: "Convolution"
   bottom: "fc6_7"
   top: "fc7_7"
-  param { lr_mult: 1 decay_mult: 1}
-  param { lr_mult: 2 decay_mult: 0}
   convolution_param {
+    bias_term: false
     num_output: 64
     pad: 1
     kernel_size: 3
     stride: 1
-    weight_filler { type: "gaussian" std: 0.1 }
+    weight_filler { type: "msra" std: 0.01 }
     bias_filler { type: "constant" value: 0 }
   }
 }
@@ -5245,14 +5065,13 @@ layer {
   type: "Convolution"
   bottom: "fc7_7"
   top: "fc8_7"
-  param { lr_mult: 1 decay_mult: 1}
-  param { lr_mult: 2 decay_mult: 0}
   convolution_param {
+    bias_term: false
     num_output: 128
     pad: 0
     kernel_size: 1
     stride: 1
-    weight_filler { type: "gaussian" std: 0.1 }
+    weight_filler { type: "msra" std: 0.01 }
     bias_filler { type: "constant" value: 0 }
   }
 }
@@ -5278,32 +5097,26 @@ layer {
 
 
 
+
 layer {
-  name: "cls_score_7"
-  type: "InnerProduct"
+  name: "pool_7/flatten"
+  type: "Flatten"
   bottom: "pool_7"
-  top: "cls_score_7"
-  param { lr_mult: 1.0 }
-  param { lr_mult: 2.0 }
-  inner_product_param {
-    num_output: 21
-    weight_filler { type: "gaussian" std: 0.01 }
-    bias_filler { type: "constant" value: 0 }
+  top: "pool_7/flatten"
   }
-}
+
 layer {
   name: "fc6_8"
   type: "Convolution"
   bottom: "roi_pool"
   top: "fc6_8"
-  param { lr_mult: 1 decay_mult: 1}
-  param { lr_mult: 2 decay_mult: 0}
   convolution_param {
+    bias_term: false
     num_output: 64
     pad: 1
     kernel_size: 3
     stride: 1
-    weight_filler { type: "gaussian" std: 0.1 }
+    weight_filler { type: "msra" std: 0.01 }
     bias_filler { type: "constant" value: 0 }
   }
 }
@@ -5320,14 +5133,13 @@ layer {
   type: "Convolution"
   bottom: "fc6_8"
   top: "fc7_8"
-  param { lr_mult: 1 decay_mult: 1}
-  param { lr_mult: 2 decay_mult: 0}
   convolution_param {
+    bias_term: false
     num_output: 64
     pad: 1
     kernel_size: 3
     stride: 1
-    weight_filler { type: "gaussian" std: 0.1 }
+    weight_filler { type: "msra" std: 0.01 }
     bias_filler { type: "constant" value: 0 }
   }
 }
@@ -5344,14 +5156,13 @@ layer {
   type: "Convolution"
   bottom: "fc7_8"
   top: "fc8_8"
-  param { lr_mult: 1 decay_mult: 1}
-  param { lr_mult: 2 decay_mult: 0}
   convolution_param {
+    bias_term: false
     num_output: 128
     pad: 0
     kernel_size: 1
     stride: 1
-    weight_filler { type: "gaussian" std: 0.1 }
+    weight_filler { type: "msra" std: 0.01 }
     bias_filler { type: "constant" value: 0 }
   }
 }
@@ -5377,32 +5188,26 @@ layer {
 
 
 
+
 layer {
-  name: "cls_score_8"
-  type: "InnerProduct"
+  name: "pool_8/flatten"
+  type: "Flatten"
   bottom: "pool_8"
-  top: "cls_score_8"
-  param { lr_mult: 1.0 }
-  param { lr_mult: 2.0 }
-  inner_product_param {
-    num_output: 21
-    weight_filler { type: "gaussian" std: 0.01 }
-    bias_filler { type: "constant" value: 0 }
+  top: "pool_8/flatten"
   }
-}
+
 layer {
   name: "fc6_9"
   type: "Convolution"
   bottom: "roi_pool"
   top: "fc6_9"
-  param { lr_mult: 1 decay_mult: 1}
-  param { lr_mult: 2 decay_mult: 0}
   convolution_param {
+    bias_term: false
     num_output: 64
     pad: 1
     kernel_size: 3
     stride: 1
-    weight_filler { type: "gaussian" std: 0.1 }
+    weight_filler { type: "msra" std: 0.01 }
     bias_filler { type: "constant" value: 0 }
   }
 }
@@ -5419,14 +5224,13 @@ layer {
   type: "Convolution"
   bottom: "fc6_9"
   top: "fc7_9"
-  param { lr_mult: 1 decay_mult: 1}
-  param { lr_mult: 2 decay_mult: 0}
   convolution_param {
+    bias_term: false
     num_output: 64
     pad: 1
     kernel_size: 3
     stride: 1
-    weight_filler { type: "gaussian" std: 0.1 }
+    weight_filler { type: "msra" std: 0.01 }
     bias_filler { type: "constant" value: 0 }
   }
 }
@@ -5443,14 +5247,13 @@ layer {
   type: "Convolution"
   bottom: "fc7_9"
   top: "fc8_9"
-  param { lr_mult: 1 decay_mult: 1}
-  param { lr_mult: 2 decay_mult: 0}
   convolution_param {
+    bias_term: false
     num_output: 128
     pad: 0
     kernel_size: 1
     stride: 1
-    weight_filler { type: "gaussian" std: 0.1 }
+    weight_filler { type: "msra" std: 0.01 }
     bias_filler { type: "constant" value: 0 }
   }
 }
@@ -5476,32 +5279,26 @@ layer {
 
 
 
+
 layer {
-  name: "cls_score_9"
-  type: "InnerProduct"
+  name: "pool_9/flatten"
+  type: "Flatten"
   bottom: "pool_9"
-  top: "cls_score_9"
-  param { lr_mult: 1.0 }
-  param { lr_mult: 2.0 }
-  inner_product_param {
-    num_output: 21
-    weight_filler { type: "gaussian" std: 0.01 }
-    bias_filler { type: "constant" value: 0 }
+  top: "pool_9/flatten"
   }
-}
+
 layer {
   name: "fc6_10"
   type: "Convolution"
   bottom: "roi_pool"
   top: "fc6_10"
-  param { lr_mult: 1 decay_mult: 1}
-  param { lr_mult: 2 decay_mult: 0}
   convolution_param {
+    bias_term: false
     num_output: 64
     pad: 1
     kernel_size: 3
     stride: 1
-    weight_filler { type: "gaussian" std: 0.1 }
+    weight_filler { type: "msra" std: 0.01 }
     bias_filler { type: "constant" value: 0 }
   }
 }
@@ -5518,14 +5315,13 @@ layer {
   type: "Convolution"
   bottom: "fc6_10"
   top: "fc7_10"
-  param { lr_mult: 1 decay_mult: 1}
-  param { lr_mult: 2 decay_mult: 0}
   convolution_param {
+    bias_term: false
     num_output: 64
     pad: 1
     kernel_size: 3
     stride: 1
-    weight_filler { type: "gaussian" std: 0.1 }
+    weight_filler { type: "msra" std: 0.01 }
     bias_filler { type: "constant" value: 0 }
   }
 }
@@ -5542,14 +5338,13 @@ layer {
   type: "Convolution"
   bottom: "fc7_10"
   top: "fc8_10"
-  param { lr_mult: 1 decay_mult: 1}
-  param { lr_mult: 2 decay_mult: 0}
   convolution_param {
+    bias_term: false
     num_output: 128
     pad: 0
     kernel_size: 1
     stride: 1
-    weight_filler { type: "gaussian" std: 0.1 }
+    weight_filler { type: "msra" std: 0.01 }
     bias_filler { type: "constant" value: 0 }
   }
 }
@@ -5575,32 +5370,26 @@ layer {
 
 
 
+
 layer {
-  name: "cls_score_10"
-  type: "InnerProduct"
+  name: "pool_10/flatten"
+  type: "Flatten"
   bottom: "pool_10"
-  top: "cls_score_10"
-  param { lr_mult: 1.0 }
-  param { lr_mult: 2.0 }
-  inner_product_param {
-    num_output: 21
-    weight_filler { type: "gaussian" std: 0.01 }
-    bias_filler { type: "constant" value: 0 }
+  top: "pool_10/flatten"
   }
-}
+
 layer {
   name: "fc6_11"
   type: "Convolution"
   bottom: "roi_pool"
   top: "fc6_11"
-  param { lr_mult: 1 decay_mult: 1}
-  param { lr_mult: 2 decay_mult: 0}
   convolution_param {
+    bias_term: false
     num_output: 64
     pad: 1
     kernel_size: 3
     stride: 1
-    weight_filler { type: "gaussian" std: 0.1 }
+    weight_filler { type: "msra" std: 0.01 }
     bias_filler { type: "constant" value: 0 }
   }
 }
@@ -5617,14 +5406,13 @@ layer {
   type: "Convolution"
   bottom: "fc6_11"
   top: "fc7_11"
-  param { lr_mult: 1 decay_mult: 1}
-  param { lr_mult: 2 decay_mult: 0}
   convolution_param {
+    bias_term: false
     num_output: 64
     pad: 1
     kernel_size: 3
     stride: 1
-    weight_filler { type: "gaussian" std: 0.1 }
+    weight_filler { type: "msra" std: 0.01 }
     bias_filler { type: "constant" value: 0 }
   }
 }
@@ -5641,14 +5429,13 @@ layer {
   type: "Convolution"
   bottom: "fc7_11"
   top: "fc8_11"
-  param { lr_mult: 1 decay_mult: 1}
-  param { lr_mult: 2 decay_mult: 0}
   convolution_param {
+    bias_term: false
     num_output: 128
     pad: 0
     kernel_size: 1
     stride: 1
-    weight_filler { type: "gaussian" std: 0.1 }
+    weight_filler { type: "msra" std: 0.01 }
     bias_filler { type: "constant" value: 0 }
   }
 }
@@ -5674,32 +5461,26 @@ layer {
 
 
 
+
 layer {
-  name: "cls_score_11"
-  type: "InnerProduct"
+  name: "pool_11/flatten"
+  type: "Flatten"
   bottom: "pool_11"
-  top: "cls_score_11"
-  param { lr_mult: 1.0 }
-  param { lr_mult: 2.0 }
-  inner_product_param {
-    num_output: 21
-    weight_filler { type: "gaussian" std: 0.01 }
-    bias_filler { type: "constant" value: 0 }
+  top: "pool_11/flatten"
   }
-}
+
 layer {
   name: "fc6_12"
   type: "Convolution"
   bottom: "roi_pool"
   top: "fc6_12"
-  param { lr_mult: 1 decay_mult: 1}
-  param { lr_mult: 2 decay_mult: 0}
   convolution_param {
+    bias_term: false
     num_output: 64
     pad: 1
     kernel_size: 3
     stride: 1
-    weight_filler { type: "gaussian" std: 0.1 }
+    weight_filler { type: "msra" std: 0.01 }
     bias_filler { type: "constant" value: 0 }
   }
 }
@@ -5716,14 +5497,13 @@ layer {
   type: "Convolution"
   bottom: "fc6_12"
   top: "fc7_12"
-  param { lr_mult: 1 decay_mult: 1}
-  param { lr_mult: 2 decay_mult: 0}
   convolution_param {
+    bias_term: false
     num_output: 64
     pad: 1
     kernel_size: 3
     stride: 1
-    weight_filler { type: "gaussian" std: 0.1 }
+    weight_filler { type: "msra" std: 0.01 }
     bias_filler { type: "constant" value: 0 }
   }
 }
@@ -5740,14 +5520,13 @@ layer {
   type: "Convolution"
   bottom: "fc7_12"
   top: "fc8_12"
-  param { lr_mult: 1 decay_mult: 1}
-  param { lr_mult: 2 decay_mult: 0}
   convolution_param {
+    bias_term: false
     num_output: 128
     pad: 0
     kernel_size: 1
     stride: 1
-    weight_filler { type: "gaussian" std: 0.1 }
+    weight_filler { type: "msra" std: 0.01 }
     bias_filler { type: "constant" value: 0 }
   }
 }
@@ -5773,32 +5552,26 @@ layer {
 
 
 
+
 layer {
-  name: "cls_score_12"
-  type: "InnerProduct"
+  name: "pool_12/flatten"
+  type: "Flatten"
   bottom: "pool_12"
-  top: "cls_score_12"
-  param { lr_mult: 1.0 }
-  param { lr_mult: 2.0 }
-  inner_product_param {
-    num_output: 21
-    weight_filler { type: "gaussian" std: 0.01 }
-    bias_filler { type: "constant" value: 0 }
+  top: "pool_12/flatten"
   }
-}
+
 layer {
   name: "fc6_13"
   type: "Convolution"
   bottom: "roi_pool"
   top: "fc6_13"
-  param { lr_mult: 1 decay_mult: 1}
-  param { lr_mult: 2 decay_mult: 0}
   convolution_param {
+    bias_term: false
     num_output: 64
     pad: 1
     kernel_size: 3
     stride: 1
-    weight_filler { type: "gaussian" std: 0.1 }
+    weight_filler { type: "msra" std: 0.01 }
     bias_filler { type: "constant" value: 0 }
   }
 }
@@ -5815,14 +5588,13 @@ layer {
   type: "Convolution"
   bottom: "fc6_13"
   top: "fc7_13"
-  param { lr_mult: 1 decay_mult: 1}
-  param { lr_mult: 2 decay_mult: 0}
   convolution_param {
+    bias_term: false
     num_output: 64
     pad: 1
     kernel_size: 3
     stride: 1
-    weight_filler { type: "gaussian" std: 0.1 }
+    weight_filler { type: "msra" std: 0.01 }
     bias_filler { type: "constant" value: 0 }
   }
 }
@@ -5839,14 +5611,13 @@ layer {
   type: "Convolution"
   bottom: "fc7_13"
   top: "fc8_13"
-  param { lr_mult: 1 decay_mult: 1}
-  param { lr_mult: 2 decay_mult: 0}
   convolution_param {
+    bias_term: false
     num_output: 128
     pad: 0
     kernel_size: 1
     stride: 1
-    weight_filler { type: "gaussian" std: 0.1 }
+    weight_filler { type: "msra" std: 0.01 }
     bias_filler { type: "constant" value: 0 }
   }
 }
@@ -5872,32 +5643,26 @@ layer {
 
 
 
+
 layer {
-  name: "cls_score_13"
-  type: "InnerProduct"
+  name: "pool_13/flatten"
+  type: "Flatten"
   bottom: "pool_13"
-  top: "cls_score_13"
-  param { lr_mult: 1.0 }
-  param { lr_mult: 2.0 }
-  inner_product_param {
-    num_output: 21
-    weight_filler { type: "gaussian" std: 0.01 }
-    bias_filler { type: "constant" value: 0 }
+  top: "pool_13/flatten"
   }
-}
+
 layer {
   name: "fc6_14"
   type: "Convolution"
   bottom: "roi_pool"
   top: "fc6_14"
-  param { lr_mult: 1 decay_mult: 1}
-  param { lr_mult: 2 decay_mult: 0}
   convolution_param {
+    bias_term: false
     num_output: 64
     pad: 1
     kernel_size: 3
     stride: 1
-    weight_filler { type: "gaussian" std: 0.1 }
+    weight_filler { type: "msra" std: 0.01 }
     bias_filler { type: "constant" value: 0 }
   }
 }
@@ -5914,14 +5679,13 @@ layer {
   type: "Convolution"
   bottom: "fc6_14"
   top: "fc7_14"
-  param { lr_mult: 1 decay_mult: 1}
-  param { lr_mult: 2 decay_mult: 0}
   convolution_param {
+    bias_term: false
     num_output: 64
     pad: 1
     kernel_size: 3
     stride: 1
-    weight_filler { type: "gaussian" std: 0.1 }
+    weight_filler { type: "msra" std: 0.01 }
     bias_filler { type: "constant" value: 0 }
   }
 }
@@ -5938,14 +5702,13 @@ layer {
   type: "Convolution"
   bottom: "fc7_14"
   top: "fc8_14"
-  param { lr_mult: 1 decay_mult: 1}
-  param { lr_mult: 2 decay_mult: 0}
   convolution_param {
+    bias_term: false
     num_output: 128
     pad: 0
     kernel_size: 1
     stride: 1
-    weight_filler { type: "gaussian" std: 0.1 }
+    weight_filler { type: "msra" std: 0.01 }
     bias_filler { type: "constant" value: 0 }
   }
 }
@@ -5971,59 +5734,68 @@ layer {
 
 
 
+
 layer {
-  name: "cls_score_14"
-  type: "InnerProduct"
+  name: "pool_14/flatten"
+  type: "Flatten"
   bottom: "pool_14"
-  top: "cls_score_14"
-  param { lr_mult: 1.0 }
-  param { lr_mult: 2.0 }
-  inner_product_param {
-    num_output: 21
-    weight_filler { type: "gaussian" std: 0.01 }
-    bias_filler { type: "constant" value: 0 }
+  top: "pool_14/flatten"
   }
-}
+
 
 layer {
   name: 'rcnn-ancors'
   type: 'Python'
   bottom: 'rois'
-  bottom: 'cls_score'
-  bottom: "cls_score_0"
-bottom: "cls_score_1"
-bottom: "cls_score_2"
-bottom: "cls_score_3"
-bottom: "cls_score_4"
-bottom: "cls_score_5"
-bottom: "cls_score_6"
-bottom: "cls_score_7"
-bottom: "cls_score_8"
-bottom: "cls_score_9"
-bottom: "cls_score_10"
-bottom: "cls_score_11"
-bottom: "cls_score_12"
-bottom: "cls_score_13"
-bottom: "cls_score_14"
+  bottom: "pool_0/flatten"
+bottom: "pool_1/flatten"
+bottom: "pool_2/flatten"
+bottom: "pool_3/flatten"
+bottom: "pool_4/flatten"
+bottom: "pool_5/flatten"
+bottom: "pool_6/flatten"
+bottom: "pool_7/flatten"
+bottom: "pool_8/flatten"
+bottom: "pool_9/flatten"
+bottom: "pool_10/flatten"
+bottom: "pool_11/flatten"
+bottom: "pool_12/flatten"
+bottom: "pool_13/flatten"
+bottom: "pool_14/flatten"
 
-  top: 'scores_all'
+  top: 'concat_all'
   python_param {
-    module: 'rpn.rcnn_layer_multi_zero_top3'
+    module: 'rpn.rcnn_layer_multi_concat'
     layer: 'RCNNLayer'
-    param_str: "{'ratios': [0.5, 1, 2], 'scales': [2, 4, 8, 16, 32], 'main_thread':True}"
+    param_str: "{'ratios': [0.5, 1, 2], 'scales': [2, 4, 8, 16, 32]}"
   }
 }
 
 
+layer {
+  name: "concat_fin"
+  type: "Concat"
+  bottom: "concat_all"
+  bottom: "fc2"
+  top: "concat_fin"
+}
+
 
 layer {
-  name: "cls_score_nonlin"
-  type: "Convolution"
-  bottom: "scores_all"
-  top: "cls_score_nonlin"
-  convolution_param {
-    num_output: 1
-    kernel_size: 1
+  name: "cls_score"
+  type: "InnerProduct"
+  bottom: "concat_fin"
+  top: "cls_score"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  inner_product_param {
+    num_output: 21
     weight_filler {
       type: "msra"
       std: 0.01
@@ -6035,32 +5807,35 @@ layer {
   }
 }
 layer {
-    name: "cls_score-fl"
-    type: "Flatten"
-    bottom: "cls_score_nonlin"
-    top: "cls_score-fl"
+  name: "bbox_pred"
+  type: "InnerProduct"
+  bottom: "concat_fin"
+  top: "bbox_pred"
+  param {
+    lr_mult: 1
+    decay_mult: 1
   }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  inner_product_param {
+    num_output: 84
+    weight_filler {
+      type: "msra"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
 
 layer {
-  name: "loss_cls"
-  type: "SoftmaxWithLoss"
+  name: "cls_prob"
+  type: "Softmax"
   bottom: "cls_score"
-  bottom: "labels"
-  propagate_down: 1
-  propagate_down: 0
-  top: "loss_cls"
-  loss_weight: 0.3
-}
-layer {
-  name: 'loss_threads'
-  type: 'Python'
-  bottom: 'cls_score-fl'
-  bottom: 'labels'
-  top: 'loss_threads'
-  python_param {
-    module: 'fast_rcnn.skip_softmax_loss_v2'
-    layer: 'SoftmaxLossLayer'
-   
-  }
-  loss_weight: 1
+  top: "cls_prob"
+  
 }

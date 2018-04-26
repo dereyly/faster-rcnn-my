@@ -9,6 +9,8 @@ layer {
     pad: 1
     kernel_size: 3
     stride: 1
+    weight_filler { type: "msra" std: 0.01 }
+    bias_filler { type: "constant" value: 0 }
   }
 }
 layer {
@@ -30,6 +32,8 @@ layer {
     pad: 1
     kernel_size: 3
     stride: 1
+    weight_filler { type: "msra" std: 0.01 }
+    bias_filler { type: "constant" value: 0 }
   }
 }
 
@@ -51,6 +55,8 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 1
+    weight_filler { type: "msra" std: 0.01 }
+    bias_filler { type: "constant" value: 0 }
   }
 }
 
