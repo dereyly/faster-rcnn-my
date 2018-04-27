@@ -48,7 +48,7 @@ class RCNNLayer(caffe.Layer):
         x_ctr = (_base_size-1.0) / 2
         self._anchors-=x_ctr
         self._num_anchors = self._anchors.shape[0]
-        self._num_anchors+=self.main_thread
+        self._num_anchors += self.main_thread
         self.th_ov=0.5
         top[0].reshape(1,self._num_anchors,self.num_cls,1)
         #top[0].reshape(1, 15, 21, 1)
@@ -89,8 +89,11 @@ class RCNNLayer(caffe.Layer):
                 idx_ov_bool[k, id] = True
         #idx_ov=np.where(overlaps>self.th_ov)
         scores_out = np.zeros((self.batch_size,self._num_anchors,self.num_cls))
-        if self.disturb_main:
-            scores_out = np.zeros((self.batch_size, self._num_anchors, self.num_cls+1))
+
+        # if self.disturb_main:
+        #     self.disturbed = False
+        #     if np.random.rand()>0.75:
+        #         self.disturbed=True
 
         self.idx_ov =[]
         self.ov_mat=np.zeros((self.batch_size,self._num_anchors))
@@ -101,12 +104,13 @@ class RCNNLayer(caffe.Layer):
             else:
                 idx = np.where(idx_ov_bool[k])[0]
             self.idx_ov.append(idx.tolist())
-            if not self.disturb_main:
-                scores_out[k,idx] = scores[idx, k]
-            if self.disturb_main:
-                scores_out[k, idx,:-1] = scores[idx, k]
-                scores_out[k, 0,-1] = 0.4*max(scores[0, k])
+            scores_out[k, idx] = scores[idx, k]
+
             self.ov_mat[k,idx]=1
+            if self.disturb_main and np.random.rand()>0.75:
+                idx_main = np.argsort(-scores[0, k])
+                scores_out[k, 0,idx_main[1]] = scores_out[k, 0,idx_main[0]]
+                self.ov_mat[k,0]=0 #set gradients to zero
 
             # bbox_out[k] = 0 #np.mean(bbox_pred[idx, k, :], axis=0)
 
@@ -133,10 +137,9 @@ class RCNNLayer(caffe.Layer):
                 # a=top[0].diff
                 #b=bottom[z+1].diff
                 if self.ov_mat[i, z] == 1:
-                    if self.disturb_main:
-                        bottom[z+1].diff[i] = top[0].diff[i, z,:-1].reshape(-1)
-                    else:
-                        bottom[z+1].diff[i] = top[0].diff[i, z].reshape(-1)
+                    bottom[z + 1].diff[i] = top[0].diff[i, z].reshape(-1)
+                    # if self.disturb_main and self.disturbed:
+                    #     bottom[z + 1].diff[i] = np.zeros(self.num_cls)
                 else:
                     bottom[z + 1].diff[i]=np.zeros(self.num_cls)
                 # zz=0
